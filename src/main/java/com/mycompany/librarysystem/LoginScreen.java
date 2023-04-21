@@ -1,5 +1,5 @@
 package com.mycompany.librarysystem;
-import javafx.application.Application;
+
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,15 +9,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-// public class LoginScreen { }
+public class LoginScreen extends Scene {
+    //private Scene homeScene;
 
-public class LoginScreen extends Application {
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Login");
-
-        GridPane grid = new GridPane();
+    public LoginScreen(Stage stage, Scene startScene) {
+        super(new GridPane(), 300, 150);
+        GridPane grid = (GridPane) this.getRoot();
+        //this.homeScene = homeScene;
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
         grid.setHgap(10);
@@ -44,16 +42,12 @@ public class LoginScreen extends Application {
         Button loginButton = new Button("Login");
         GridPane.setConstraints(loginButton, 1, 2);
 
-        //Add all the elements to the grid
+        loginButton.setOnAction(e -> {
+            HomeScreen homeScene = new HomeScreen(stage, startScene);
+            stage.setScene(homeScene);
+        });
+
         grid.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, loginButton);
-
-        Scene scene = new Scene(grid, 300, 150);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
+        stage.setTitle("Login Screen");
     }
 }
-
