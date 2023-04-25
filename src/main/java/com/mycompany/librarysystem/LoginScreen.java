@@ -43,7 +43,7 @@ public class LoginScreen extends Scene {
         GridPane.setConstraints(loginButton, 1, 2);
 
         loginButton.setOnAction(e -> {
-            HomeScreen homeScene = new HomeScreen(stage, startScene);
+            HomeScene homeScene = new HomeScene(stage, startScene);
             stage.setScene(homeScene);
         });
 
