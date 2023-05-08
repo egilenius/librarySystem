@@ -8,12 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class SearchScene extends Scene {
+public class GuestSearchScene extends Scene {
     private Scene startScene;
     String[][] bookData = {
             {"The Great Gatsby", "F. Scott Fitzgerald", "9780141182636", "Fiction"},
@@ -28,26 +27,23 @@ public class SearchScene extends Scene {
             {"The Da Vinci Code", "Dan Brown", "9780307474278", "Thriller"}
     };
 
-    public SearchScene(Stage stage, Scene startScene) {
+    public GuestSearchScene(Stage stage, Scene startScene) {
 
         super(new BorderPane(), 700, 300);
         BorderPane borderPane = (BorderPane) this.getRoot();
         this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene);
-        Node buttons = homeScene.getButtons(stage, startScene);
-        borderPane.setTop(buttons);
 
+
+         // Return to Start Screen
+         Button returnButton = new Button("Return to Start Screen");
+         GridPane.setConstraints(returnButton, 0, 0);
+         returnButton.setOnAction(e -> {
+         stage.setScene(this.startScene);
+         });
         /**
-        // Return to Start Screen
-        Button returnButton = new Button("Return to Start Screen");
-        GridPane.setConstraints(returnButton, 0, 0);
-        returnButton.setOnAction(e -> {
-            stage.setScene(this.startScene);
-        });
-
-        Button logoutButton = new Button("Logout");
-        //logoutButton.setOnAction(e -> );
-        GridPane.setConstraints(logoutButton, 8, 0);
+         Button logoutButton = new Button("Logout");
+         //logoutButton.setOnAction(e -> );
+         GridPane.setConstraints(logoutButton, 8, 0);
          */
         // Search bar
         TextField searchInput = new TextField();
@@ -62,6 +58,7 @@ public class SearchScene extends Scene {
         ObservableList<String> items = FXCollections.observableArrayList();
         GridPane.setConstraints(resultList, 0, 7);
 
+        /**
         // Borrow button
         Button borrowButton = new Button("Borrow");
         GridPane.setConstraints(borrowButton, 1, 7);
@@ -111,6 +108,7 @@ public class SearchScene extends Scene {
                 }
             }
         });
+         */
 
         // Search button
         Button searchButton = new Button("Search");
@@ -137,18 +135,19 @@ public class SearchScene extends Scene {
         gridPane.add(searchInput, 0, 0);
         gridPane.add(searchButton, 1, 0);
         gridPane.add(resultList, 0, 1, 2, 1);
-        gridPane.add(borrowButton, 1, 2);
 
         // Add the GridPane to the center of the BorderPane
         borderPane.setCenter(gridPane);
+        GridPane.setConstraints(returnButton, 0, 0);
+        gridPane.add(returnButton, 0, 2);
 
         // Add the nodes to the GridPane
         /**
-        GridPane.setConstraints(returnButton, 0, 0);
-        GridPane.setConstraints(logoutButton, 8, 0);
-        gridPane.add(returnButton, 0, 2);
-        gridPane.add(logoutButton, 8, 2);
-        */
+         GridPane.setConstraints(returnButton, 0, 0);
+         GridPane.setConstraints(logoutButton, 8, 0);
+         gridPane.add(returnButton, 0, 2);
+         gridPane.add(logoutButton, 8, 2);
+         */
         stage.setTitle("SearchScene");
         stage.setScene(this);
 

@@ -1,7 +1,6 @@
 package com.mycompany.librarysystem;
 
 import java.sql.*;
-import java.util.ServiceLoader;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -14,12 +13,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class LoginScreen extends Scene {
+public class LoginScene extends Scene {
     private static final String DB_URL = "jdbc:postgresql://hattie.db.elephantsql.com:5432/oaehwzla";
     private static final String DB_USER = "oaehwzla";
     private static final String DB_PASSWORD = "aj3XjlSmghfN4LGUZE12mOfUTDaKXiJY";
 
-    public LoginScreen(Stage stage, Scene startScene) {
+    public LoginScene(Stage stage, Scene startScene) {
         super(new GridPane(), 300, 150);
         GridPane grid = (GridPane) this.getRoot();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -51,7 +50,7 @@ public class LoginScreen extends Scene {
         loginButton.setOnAction(e -> {
             try {
                 if (validateUser(usernameInput.getText(), passwordInput.getText())) {
-                    HomeScreen homeScene = new HomeScreen(stage, startScene);
+                    HomeScene homeScene = new HomeScene(stage, startScene);
                     stage.setScene(homeScene);
                 } else {
                     Alert alert = new Alert(AlertType.ERROR);

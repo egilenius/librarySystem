@@ -27,7 +27,7 @@ public class Main extends Application {
         Button loginButton = new Button("Login");
         GridPane.setConstraints(loginButton, 0, 0);
         loginButton.setOnAction(e ->
-            {   Scene loginScene = new LoginScreen(stage, startScene);
+            {   Scene loginScene = new LoginScene(stage, startScene);
                 stage.setScene(loginScene);
             });
 
@@ -39,8 +39,37 @@ public class Main extends Application {
             stage.setScene(searchScene);
         });
 
+        //Test new functions
+        Button updateButton = new Button("Update");
+        GridPane.setConstraints(updateButton, 2, 0);
+        updateButton.setOnAction(e ->
+        {   Scene updateScene = new UpdateScene(stage, startScene);
+            stage.setScene(updateScene);
+        });
+
+        Button dueButton = new Button("Overdue");
+        GridPane.setConstraints(dueButton, 3, 0);
+        dueButton.setOnAction(e ->
+        {   Scene dueScene = new DueScene(stage, startScene);
+            stage.setScene(dueScene);
+        });
+
+        Button guestSearchButton = new Button("GuestSearch");
+        GridPane.setConstraints(guestSearchButton, 2, 1);
+        guestSearchButton.setOnAction(e ->
+        {   Scene guestSearchScene = new GuestSearchScene(stage, startScene);
+            stage.setScene(guestSearchScene);
+        });
+
+        Button homeButton = new Button("Home");
+        GridPane.setConstraints(homeButton, 3, 1);
+        homeButton.setOnAction(e ->
+        {   Scene homeScene = new HomeScene(stage, startScene);
+            stage.setScene(homeScene);
+        });
+
         //Add all the elements to the grid
-        grid.getChildren().addAll(loginButton, searchButton);
+        grid.getChildren().addAll(loginButton, searchButton, updateButton, dueButton, guestSearchButton, homeButton);
 
         startScene = new Scene(grid, 300, 150);
         stage.setScene(startScene);
