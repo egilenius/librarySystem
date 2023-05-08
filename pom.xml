@@ -20,7 +20,6 @@
             <artifactId>javafx-media</artifactId>
             <version>16</version>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>

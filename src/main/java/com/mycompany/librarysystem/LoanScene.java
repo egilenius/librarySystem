@@ -1,18 +1,16 @@
 package com.mycompany.librarysystem;
 
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class LoanScene extends Scene {
+    private Scene startScene;
 
     //ArrayList<Loan> bookData = new ArrayList<>();
     Loan loan = new Loan("1", "true", LocalDate.of(2023, 05, 10));
@@ -47,23 +45,12 @@ public class LoanScene extends Scene {
 
 
     public LoanScene(Stage stage, Scene startScene) {
-        super(new BorderPane(), 400, 300);
+        super(new BorderPane(), 700, 300);
         BorderPane borderPane = (BorderPane) this.getRoot();
-
-        // Create menu bar
-        MenuBar menuBar = new MenuBar();
-
-        // Create menu
-        Menu menu = new Menu("Menu");
-
-        // Create menu items
-        MenuItem searchItem = new MenuItem("Search");
-        MenuItem loanItem = new MenuItem("Loans");
-        MenuItem logoutItem = new MenuItem("Logout");
-        menu.getItems().addAll(searchItem, loanItem, logoutItem);
-        menuBar.getMenus().addAll(menu);
-        borderPane.setTop(menuBar);
-        borderPane.setTop(menuBar);
+        this.startScene = startScene;
+        HomeScene homeScene = new HomeScene(stage, startScene);
+        Node buttons = homeScene.getButtons(stage, startScene);
+        borderPane.setTop(buttons);
 
         // Create main grid pane
         GridPane grid = new GridPane();
@@ -116,11 +103,6 @@ public class LoanScene extends Scene {
         stage.setTitle("LoanScene");
         stage.show();
 
-        // Add button functionality
-        searchItem.setOnAction(e -> {
-            SearchScene searchScene = new SearchScene(stage, startScene);
-            stage.setScene(searchScene);
-        });
     }
 
 }

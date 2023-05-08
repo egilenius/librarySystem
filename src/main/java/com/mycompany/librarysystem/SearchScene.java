@@ -3,8 +3,10 @@ package com.mycompany.librarysystem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -27,21 +29,15 @@ public class SearchScene extends Scene {
     };
 
     public SearchScene(Stage stage, Scene startScene) {
+
+        super(new BorderPane(), 700, 300);
+        BorderPane borderPane = (BorderPane) this.getRoot();
+        this.startScene = startScene;
+        HomeScene homeScene = new HomeScene(stage, startScene);
+        Node buttons = homeScene.getButtons(stage, startScene);
+        borderPane.setTop(buttons);
+
         /**
-        super(new VBox(), 400, 300);
-        VBox vbox = (VBox) this.getRoot();
-        this.startScene = startScene;
-        vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.setSpacing(10); */
-
-        super(new GridPane(), 600, 300);
-        GridPane grid = (GridPane) this.getRoot();
-        this.startScene = startScene;
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
-        grid.setHgap(10);
-
-
         // Return to Start Screen
         Button returnButton = new Button("Return to Start Screen");
         GridPane.setConstraints(returnButton, 0, 0);
@@ -52,7 +48,7 @@ public class SearchScene extends Scene {
         Button logoutButton = new Button("Logout");
         //logoutButton.setOnAction(e -> );
         GridPane.setConstraints(logoutButton, 8, 0);
-
+         */
         // Search bar
         TextField searchInput = new TextField();
         searchInput.setPromptText("Search");
@@ -131,9 +127,33 @@ public class SearchScene extends Scene {
                     }
                 }
             }
+            resultList.setItems(items);
         });
 
-        grid.getChildren().addAll(returnButton, searchInput, searchButton, borrowButton, resultList, logoutButton);
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 10, 10, 10));
+        gridPane.add(searchInput, 0, 0);
+        gridPane.add(searchButton, 1, 0);
+        gridPane.add(resultList, 0, 1, 2, 1);
+        gridPane.add(borrowButton, 1, 2);
+
+        // Add the GridPane to the center of the BorderPane
+        borderPane.setCenter(gridPane);
+
+        // Add the nodes to the GridPane
+        /**
+        GridPane.setConstraints(returnButton, 0, 0);
+        GridPane.setConstraints(logoutButton, 8, 0);
+        gridPane.add(returnButton, 0, 2);
+        gridPane.add(logoutButton, 8, 2);
+        */
+        stage.setTitle("SearchScene");
+        stage.setScene(this);
+
+        // Kolla över detta före att göra snyggt. Vilken av uppläggen?
+        //gridPane.getChildren().addAll(returnButton, searchInput, searchButton, borrowButton, resultList, logoutButton);
         resultList.setItems(items);
 
         stage.setTitle("SearchScene");
