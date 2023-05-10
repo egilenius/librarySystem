@@ -9,6 +9,14 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     private Scene startScene;
+    private User user;
+
+
+    private Button dueButton;
+
+    private Button updateButton;
+
+
 
     public static void main(String[] args) {
         launch(args);
@@ -23,15 +31,16 @@ public class Main extends Application {
         grid.setVgap(8);
         grid.setHgap(10);
 
-        User user = new User("Test");
+        user = null;
 
         //Login Button
         Button loginButton = new Button("Login");
         GridPane.setConstraints(loginButton, 0, 0);
-        loginButton.setOnAction(e ->
-            {   Scene loginScene = new LoginScene(stage, startScene);
-                stage.setScene(loginScene);
-            });
+        loginButton.setOnAction(e -> {
+            LoginScene loginScene = new LoginScene(stage, startScene, user);
+            stage.setScene(loginScene);
+
+        });
 
         //Search Button
         Button searchButton = new Button("Search");
@@ -42,40 +51,42 @@ public class Main extends Application {
         });
 
         //Test new functions
-        Button updateButton = new Button("Update");
+        updateButton = new Button("Update"); // Remove variable declaration
         GridPane.setConstraints(updateButton, 2, 0);
-        updateButton.setOnAction(e ->
-        {   Scene updateScene = new UpdateScene(stage, startScene, user);
+        updateButton.setOnAction(e -> {
+            Scene updateScene = new UpdateScene(stage, startScene, user);
             stage.setScene(updateScene);
         });
 
-        Button dueButton = new Button("Overdue");
+        dueButton = new Button("Overdue"); // Remove variable declaration
         GridPane.setConstraints(dueButton, 3, 0);
-        dueButton.setOnAction(e ->
-        {   Scene dueScene = new DueScene(stage, startScene, user);
+        dueButton.setOnAction(e -> {
+            Scene dueScene = new DueScene(stage, startScene, user);
             stage.setScene(dueScene);
         });
 
         Button guestSearchButton = new Button("GuestSearch");
         GridPane.setConstraints(guestSearchButton, 2, 1);
-        guestSearchButton.setOnAction(e ->
-        {   Scene guestSearchScene = new GuestSearchScene(stage, startScene);
+        guestSearchButton.setOnAction(e -> {
+            Scene guestSearchScene = new GuestSearchScene(stage, startScene);
             stage.setScene(guestSearchScene);
         });
 
         Button homeButton = new Button("Home");
         GridPane.setConstraints(homeButton, 3, 1);
-        homeButton.setOnAction(e ->
-        {   Scene homeScene = new HomeScene(stage, startScene, user);
+        homeButton.setOnAction(e -> {
+            Scene homeScene = new HomeScene(stage, startScene, user);
             stage.setScene(homeScene);
         });
 
+
+
+
         //Add all the elements to the grid
-        grid.getChildren().addAll(loginButton, searchButton, updateButton, dueButton, guestSearchButton, homeButton);
+        grid.getChildren().addAll(loginButton, searchButton, guestSearchButton, homeButton);
 
         startScene = new Scene(grid, 300, 150);
         stage.setScene(startScene);
         stage.show();
     }
-
 }

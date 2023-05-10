@@ -1,11 +1,15 @@
 package com.mycompany.librarysystem;
 
+import java.util.UUID;
+
 public class User {
-    private int id;
+    private UUID userid;
     private String username;
     private String password;
     private String email;
     private int type;
+    private int allowedloans;
+    private int presentloans;
 
     String[][] bookData = {
         {"The Great Gatsby", "no", "2023-05-10"}, //loan
@@ -20,24 +24,16 @@ public class User {
         {"The Da Vinci Code", "no", "2023-05-18"} //loan
     };
 
-    public User(String username) {
+
+    public User(String username, UUID userid, int allowedloans, int presentloans) {
         this.username = username;
+        this.userid = userid;
+        this.allowedloans = allowedloans;
+        this.presentloans = presentloans;
     }
 
-    public User(int id, String username, String password, String email, int type) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.type = type;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public UUID getUserid() {
+        return userid;
     }
 
     public String getUsername() {
@@ -70,6 +66,14 @@ public class User {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getAllowedloans() {
+        return allowedloans;
+    }
+
+    public int getPresentloans() {
+        return presentloans;
     }
 
     // Constructor, getters, setters, and database methods

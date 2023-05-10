@@ -59,12 +59,7 @@ public class HomeScene extends Scene {
             Scene LoanScene = new LoanScene(stage, startScene, user);
             stage.setScene(LoanScene);
         });
-        //Logout
-        Button LogoutButton = new Button("Logout(" + user.getUsername()+")");
-        GridPane.setConstraints(LogoutButton, 3, 0);
-        LogoutButton.setOnAction(e -> {
-            stage.setScene(startScene);
-        });
+
         //Create librarian buttons
         //Due items button
         Button dueButton = new Button("Due items");
@@ -87,6 +82,23 @@ public class HomeScene extends Scene {
         updateButton.setOnAction(e -> {
             Scene updateScene = new UpdateScene(stage, startScene, user);
             stage.setScene(updateScene);
+        });
+
+        //Logout
+        Button LogoutButton;
+        if (user != null) {
+            LogoutButton = new Button("Logout (" + user.getUsername() + ")");
+        } else {
+            LogoutButton = new Button("Not logged in");
+            // Disable features that require a logged-in user
+            LoanButton.setDisable(true);
+            dueButton.setDisable(true);
+            addButton.setDisable(true);
+            updateButton.setDisable(true);
+        }
+        GridPane.setConstraints(LogoutButton, 3, 0);
+        LogoutButton.setOnAction(e -> {
+            stage.setScene(startScene);
         });
 
         // Add buttons to top of BorderPane

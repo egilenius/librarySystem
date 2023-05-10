@@ -1,6 +1,9 @@
 package com.mycompany.librarysystem;
 
 import java.sql.*;
+import java.util.UUID;
+
+
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -15,12 +18,16 @@ import javafx.stage.Stage;
 
 public class LoginScene extends Scene {
 
-    public LoginScene(Stage stage, Scene startScene) {
+    private User user;
+
+    public LoginScene(Stage stage, Scene startScene, User user) {
         super(new GridPane(), 300, 150);
         GridPane grid = (GridPane) this.getRoot();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
         grid.setHgap(10);
+
+        this.user = user;
 
         //Username Label
         Label usernameLabel = new Label("Username:");
@@ -48,18 +55,18 @@ public class LoginScene extends Scene {
             try {
                 // username asd
                 // password as
-                if (validateUser(usernameInput.getText(), passwordInput.getText())) {
-                    User user = new User(usernameInput.getText());
-                    HomeScene homeScene = new HomeScene(stage, startScene, user);
+                User loggedInUser = validateUser(usernameInput.getText(), passwordInput.getText());
+                if (loggedInUser != null) {
+                    this.user = loggedInUser;
+                    HomeScene homeScene = new HomeScene(stage, startScene, loggedInUser);
                     stage.setScene(homeScene);
-                } else {
 
+                } else {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
                     alert.setContentText("Invalid username or password!");
                     alert.showAndWait();
-
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -70,7 +77,7 @@ public class LoginScene extends Scene {
         stage.setTitle("Login Screen");
     }
 
-    private boolean validateUser(String username, String password) throws SQLException {
+    private User validateUser(String username, String password) throws SQLException {
         String query = "SELECT * FROM public.anv WHERE username = ? AND password = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -80,7 +87,15 @@ public class LoginScene extends Scene {
             preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            return resultSet.next();
+            if (resultSet.next()) {
+                UUID userid = UUID.fromString(resultSet.getString("userid"));
+                int allowedloans = resultSet.getInt("allowedloans");
+                int presentloans = resultSet.getInt("presentloans");
+
+                return new User(username, userid, allowedloans, presentloans);
+            } else {
+                return null;
+            }
         }
     }
 }
