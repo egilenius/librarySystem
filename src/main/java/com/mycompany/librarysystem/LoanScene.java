@@ -65,17 +65,17 @@ public class LoanScene extends Scene {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setObject(1, user.getUserId());
+            preparedStatement.setObject(1, user.getUserid());
             ResultSet resultSet = preparedStatement.executeQuery();
 
             LocalDate today = LocalDate.now();
 
             while (resultSet.next()) {
-                String title = resultSet.getString("title"); // Replace with the correct title from your database schema
-                String returned = resultSet.getString("finished");
+                String title = resultSet.getString("title");
+                boolean finished = resultSet.getBoolean("finished");
                 LocalDate returnDate = resultSet.getDate("datedue").toLocalDate();
 
-                if (returned.equals("yes")) {
+                if (finished) {
                     listFinishedLoans.getItems().add(title);
                 } else if (returnDate.isAfter(today)) {
                     listCurrentLoans.getItems().add(title);
