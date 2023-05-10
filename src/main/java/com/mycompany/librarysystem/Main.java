@@ -23,6 +23,8 @@ public class Main extends Application {
         grid.setVgap(8);
         grid.setHgap(10);
 
+        User user = new User("Test");
+
         //Login Button
         Button loginButton = new Button("Login");
         GridPane.setConstraints(loginButton, 0, 0);
@@ -35,7 +37,7 @@ public class Main extends Application {
         Button searchButton = new Button("Search");
         GridPane.setConstraints(searchButton, 1, 0);
         searchButton.setOnAction(e -> {
-            SearchScene searchScene = new SearchScene(stage, startScene);
+            SearchScene searchScene = new SearchScene(stage, startScene, user);
             stage.setScene(searchScene);
         });
 
@@ -43,14 +45,14 @@ public class Main extends Application {
         Button updateButton = new Button("Update");
         GridPane.setConstraints(updateButton, 2, 0);
         updateButton.setOnAction(e ->
-        {   Scene updateScene = new UpdateScene(stage, startScene);
+        {   Scene updateScene = new UpdateScene(stage, startScene, user);
             stage.setScene(updateScene);
         });
 
         Button dueButton = new Button("Overdue");
         GridPane.setConstraints(dueButton, 3, 0);
         dueButton.setOnAction(e ->
-        {   Scene dueScene = new DueScene(stage, startScene);
+        {   Scene dueScene = new DueScene(stage, startScene, user);
             stage.setScene(dueScene);
         });
 
@@ -64,7 +66,7 @@ public class Main extends Application {
         Button homeButton = new Button("Home");
         GridPane.setConstraints(homeButton, 3, 1);
         homeButton.setOnAction(e ->
-        {   Scene homeScene = new HomeScene(stage, startScene);
+        {   Scene homeScene = new HomeScene(stage, startScene, user);
             stage.setScene(homeScene);
         });
 

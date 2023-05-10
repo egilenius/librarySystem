@@ -49,15 +49,20 @@ public class LoginScene extends Scene {
 
         loginButton.setOnAction(e -> {
             try {
+                // username asd
+                // password as
                 if (validateUser(usernameInput.getText(), passwordInput.getText())) {
-                    HomeScene homeScene = new HomeScene(stage, startScene);
+                    User user = new User(usernameInput.getText());
+                    HomeScene homeScene = new HomeScene(stage, startScene, user);
                     stage.setScene(homeScene);
                 } else {
+
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText(null);
                     alert.setContentText("Invalid username or password!");
                     alert.showAndWait();
+
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();

@@ -7,63 +7,79 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import java.io.File;
+import java.sql.*;
 
 public class Lek extends Application {
 
-
+    private static final String DB_URL = "jdbc:postgresql://hattie.db.elephantsql.com:5432/oaehwzla";
+    private static final String DB_USER = "oaehwzla";
+    private static final String DB_PASSWORD = "aj3XjlSmghfN4LGUZE12mOfUTDaKXiJY";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Add Item");
 
-        // Create UI controls
-        Label titleLabel = new Label("Title:");
-        TextField titleTextField = new TextField();
-
-        Label authorLabel = new Label("Author/Director:");
-        TextField authorTextField = new TextField();
-
-        Label isbnLabel = new Label("ISBN (for books only):");
-        TextField isbnTextField = new TextField();
-
-        Label genreLabel = new Label("Genre/Subject:");
-        ComboBox<String> genreComboBox = new ComboBox<>();
-        genreComboBox.getItems().addAll("Programming", "Java", "System Development", "Horror", "Drama", "Comedy");
-
-        Label ratingLabel = new Label("Rating (for movies only):");
-        TextField ratingTextField = new TextField();
-
-        Label countryLabel = new Label("Country (for movies only):");
-        TextField countryTextField = new TextField();
-
-        Label actorsLabel = new Label("Actors (for movies only):");
-        TextField actorsTextField = new TextField();
-
-        Button saveButton = new Button("Save");
-        saveButton.setOnAction(e -> {
-            // Save item to library system
-            System.out.println("Item saved!");
-        });
-
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setOnAction(e -> primaryStage.close());
 
         // Create layout
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
-        gridPane.addRow(0, titleLabel, titleTextField);
-        gridPane.addRow(1, authorLabel, authorTextField);
-        gridPane.addRow(2, isbnLabel, isbnTextField);
-        gridPane.addRow(3, genreLabel, genreComboBox);
-        gridPane.addRow(4, ratingLabel, ratingTextField);
-        gridPane.addRow(5, countryLabel, countryTextField);
-        gridPane.addRow(6, actorsLabel, actorsTextField);
-        gridPane.addRow(7, saveButton, cancelButton);
 
+        Button addButton = new Button("Add");
+        addButton.setOnAction(event -> {
+                    try {
+
+                        if (addItem()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Success");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Item added!");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Invalid input!");
+                            alert.showAndWait();
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                }
+        );
+        gridPane.getChildren().add(addButton);
         Scene scene = new Scene(gridPane, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private boolean addItem() throws SQLException {
+        //String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (8c5fef02-46bb-4c3c-9938-44a188a447ba, 'Bibeln', '9780141182612', 'Jesus', 'GUD', 8)";
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new SQLException("PostgreSQL JDBC driver not found");
+        }
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+             // create a Statement from the connection
+             Statement statement = conn.createStatement();
+            // insert the data
+             statement.executeUpdate("INSERT INTO Customers " + "VALUES (1001, 'Simpson', 'Mr.', 'Springfield', 2001)");
+
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.executeQuery();
+            //ResultSet resultSet = preparedStatement.executeQuery();
+
+        }
+        return true;
     }
 
     public static void main(String[] args) {

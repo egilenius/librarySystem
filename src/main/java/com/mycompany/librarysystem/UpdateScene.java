@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class UpdateScene extends Scene {
     private Scene startScene;
+    User user;
     String[][] bookData = {
             {"The Great Gatsby", "F. Scott Fitzgerald", "9780141182636", "Fiction"},
             {"To Kill a Mockingbird", "Harper Lee", "9780060935467", "Fiction"},
@@ -28,7 +29,7 @@ public class UpdateScene extends Scene {
             {"The Da Vinci Code", "Dan Brown", "9780307474278", "Thriller"}
     };
 
-    public UpdateScene(Stage stage, Scene startScene) {
+    public UpdateScene(Stage stage, Scene startScene, User user) {
         /**
         super(new GridPane(), 700, 300);
         GridPane grid = (GridPane) this.getRoot();
@@ -41,9 +42,10 @@ public class UpdateScene extends Scene {
         grid.setHgap(10);
          */
         super(new BorderPane(), 700, 300);
+        this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
         this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, startScene, user);
         Node buttons = homeScene.getButtons(stage, startScene);
         borderPane.setTop(buttons);
 
@@ -61,16 +63,19 @@ public class UpdateScene extends Scene {
         ObservableList<String> items = FXCollections.observableArrayList();
         GridPane.setConstraints(resultList, 0, 7);
 
+        // TODO connect to database
         // Update item
         Button updateButton = new Button("Update");
         GridPane.setConstraints(updateButton, 1, 7);
         updateButton.setOnAction(e -> {});
 
+        // TODO connect to database
         // delete item
         Button deleteButton = new Button("Delete");
         GridPane.setConstraints(deleteButton, 2, 7);
         deleteButton.setOnAction(e -> {});
 
+        // TODO conncet to database
         // Search button
         Button searchButton = new Button("Search");
         GridPane.setConstraints(searchButton, 1, 3);

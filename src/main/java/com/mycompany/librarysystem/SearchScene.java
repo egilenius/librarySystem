@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class SearchScene extends Scene {
     private Scene startScene;
+    User user;
     String[][] bookData = {
             {"The Great Gatsby", "F. Scott Fitzgerald", "9780141182636", "Fiction"},
             {"To Kill a Mockingbird", "Harper Lee", "9780060935467", "Fiction"},
@@ -28,12 +29,13 @@ public class SearchScene extends Scene {
             {"The Da Vinci Code", "Dan Brown", "9780307474278", "Thriller"}
     };
 
-    public SearchScene(Stage stage, Scene startScene) {
+    public SearchScene(Stage stage, Scene startScene, User user) {
 
         super(new BorderPane(), 700, 300);
+        this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
         this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, startScene, user);
         Node buttons = homeScene.getButtons(stage, startScene);
         borderPane.setTop(buttons);
 
@@ -111,7 +113,7 @@ public class SearchScene extends Scene {
                 }
             }
         });
-
+        // TODO connect to database
         // Search button
         Button searchButton = new Button("Search");
         GridPane.setConstraints(searchButton, 1, 3);

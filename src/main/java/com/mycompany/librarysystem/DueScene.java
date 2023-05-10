@@ -11,28 +11,16 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class DueScene extends Scene {
+    User user;
 
-    private String[][] bookData = {
-            {"The Great Gatsby", "no", "2023-05-10"}, //loan
-            {"To Kill a Mockingbird", "no", "2023-05-12"}, //loan
-            {"Pride and Prejudice", "yes", "2023-04-20"}, //finished
-            {"1984", "no", "2023-05-15"}, //loan
-            {"The Catcher in the Rye", "yes", "2023-04-22"}, //finished
-            {"Animal Farm", "yes", "2023-04-25"}, // finished
-            {"Brave New World", "no", "2023-03-20"}, //overdue
-            {"The Hobbit", "no", "2023-03-08"}, //overdue
-            {"Lord of the Flies", "yes", "2023-04-24"}, // finished
-            {"The Da Vinci Code", "no", "2023-05-18"} //loan
-    };
-
-    public DueScene(Stage stage, Scene startScene) {
+    public DueScene(Stage stage, Scene startScene, User user) {
         super(new BorderPane(), 400, 300);
+        this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
 
-        HomeScene homeScene = new HomeScene(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, startScene, user);
         Node buttons = homeScene.getButtons(stage, startScene);
         borderPane.setTop(buttons);
-
 
         // Create main grid pane
         GridPane grid = new GridPane();
@@ -56,7 +44,7 @@ public class DueScene extends Scene {
         LocalDate today = LocalDate.now();
 
         // Show overdue books
-        for (String[] book : bookData) {
+        for (String[] book : user.bookData) {
             String title = book[0];
             String returned = book[1];
             LocalDate returnDate = LocalDate.parse(book[2]);
