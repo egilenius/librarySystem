@@ -14,9 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LoginScene extends Scene {
-    private static final String DB_URL = "jdbc:postgresql://hattie.db.elephantsql.com:5432/oaehwzla";
-    private static final String DB_USER = "oaehwzla";
-    private static final String DB_PASSWORD = "aj3XjlSmghfN4LGUZE12mOfUTDaKXiJY";
 
     public LoginScene(Stage stage, Scene startScene) {
         super(new GridPane(), 300, 150);
@@ -76,14 +73,7 @@ public class LoginScene extends Scene {
     private boolean validateUser(String username, String password) throws SQLException {
         String query = "SELECT * FROM public.anv WHERE username = ? AND password = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new SQLException("PostgreSQL JDBC driver not found");
-        }
-
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, username);
@@ -93,5 +83,4 @@ public class LoginScene extends Scene {
             return resultSet.next();
         }
     }
-
 }
