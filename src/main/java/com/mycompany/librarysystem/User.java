@@ -32,7 +32,7 @@ public class User {
         this.presentloans = presentloans;
     }
 
-    public UUID getUserid() {
+    public UUID getUserId() {
         return userid;
     }
 

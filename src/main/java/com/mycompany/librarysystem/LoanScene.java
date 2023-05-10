@@ -3,20 +3,17 @@ package com.mycompany.librarysystem;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class LoanScene extends Scene {
     private Scene startScene;
     User user;
-
-    //ArrayList<Loan> bookData = new ArrayList<>();
-    Loan loan = new Loan("1", "true", LocalDate.of(2023, 05, 10));
-    //bookData.add(loan);
-
 
     public LoanScene(Stage stage, Scene startScene, User user) {
         super(new BorderPane(), 700, 300);
@@ -54,31 +51,40 @@ public class LoanScene extends Scene {
         // Add grid to center of BorderPane
         borderPane.setCenter(grid);
 
-        LocalDate today = LocalDate.now();
-        // show books
-        // TODO connect to database
-        for (String[] book : user.bookData) {
-            String title = book[0];
-            String returned = book[1];
-            LocalDate returnDate = LocalDate.parse(book[2]);
-
-            if (returned.equals("yes")) {
-                // Title is finished
-                listFinishedLoans.getItems().add(title);
-            } else if (returnDate.isAfter(today)) {
-                // Title is current loan
-                listCurrentLoans.getItems().add(title);
-            } else {
-                // Title is overdue
-                listOverdue.getItems().add(title);
-            }
-        }
+        fetchUserLoans(user, listOverdue, listCurrentLoans, listFinishedLoans);
 
         // Show scene
         stage.setScene(this);
         stage.setTitle("LoanScene");
         stage.show();
-
     }
 
+    private void fetchUserLoans(User user, ListView<String> listOverdue, ListView<String> listCurrentLoans, ListView<String> listFinishedLoans) {
+        String query = "SELECT loan.*, item.* FROM public.loan JOIN public.item ON loan.itemid = item.itemid WHERE loan.userid = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setObject(1, user.getUserId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            LocalDate today = LocalDate.now();
+
+            while (resultSet.next()) {
+                String title = resultSet.getString("title"); // Replace with the correct title from your database schema
+                String returned = resultSet.getString("finished");
+                LocalDate returnDate = resultSet.getDate("datedue").toLocalDate();
+
+                if (returned.equals("yes")) {
+                    listFinishedLoans.getItems().add(title);
+                } else if (returnDate.isAfter(today)) {
+                    listCurrentLoans.getItems().add(title);
+                } else {
+                    listOverdue.getItems().add(title);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
