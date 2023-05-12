@@ -69,9 +69,9 @@ public class Lek extends Application {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
              // create a Statement from the connection
-             Statement statement = conn.createStatement();
+            // Statement statement = conn.createStatement();
             // insert the data
-             statement.executeUpdate("INSERT INTO Customers " + "VALUES (1001, 'Simpson', 'Mr.', 'Springfield', 2001)");
+             //statement.executeUpdate("INSERT INTO Customers " + "VALUES (1001, 'Simpson', 'Mr.', 'Springfield', 2001)");
 
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
