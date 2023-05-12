@@ -7,6 +7,14 @@ public class Loan {
     private String finished;
     private LocalDate dueDate;
 
+    private String userName;
+
+    //For DueScene
+    public Loan(String title, LocalDate dueDate, String firstName, String lastname) {
+        this.title = title;
+        this.dueDate = dueDate;
+        this.userName = firstName + " " + lastname;
+    }
 
     public Loan(String title, String finished, LocalDate dueDate) {
         this.title = title;
@@ -36,5 +44,13 @@ public class Loan {
 
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
