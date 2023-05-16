@@ -12,11 +12,13 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
 public class SearchScene extends Scene {
     private Scene startScene;
+    private HashMap<String, UUID> itemMap = new HashMap<>();
     User user;
 
     public SearchScene(Stage stage, Scene startScene, User user) {
@@ -61,9 +63,8 @@ public class SearchScene extends Scene {
                     PreparedStatement pstmt = conn.prepareStatement(sql);
 
                     for (String item : selectedItems) {
-                        // Get item's ID from the selected string
-                        UUID itemId = UUID.fromString(item.split(" - ")[2]);
-
+                        // Get the UUID from itemMap
+                        UUID itemId = itemMap.get(item);
 
                         // Current date
                         java.sql.Date dateBorrowed = java.sql.Date.valueOf(LocalDate.now());
@@ -102,19 +103,24 @@ public class SearchScene extends Scene {
 
 
 
+
         // Search button
         Button searchButton = new Button("Search");
         GridPane.setConstraints(searchButton, 1, 3);
         searchButton.setOnAction(e -> {
             String query = searchInput.getText().toLowerCase();
             items.clear();
+            itemMap.clear(); // Clear the map at the beginning of each search
             try {
                 Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement();
-                String sql = "SELECT itemid, title, isbn FROM item WHERE LOWER(title) LIKE '%" + query + "%' OR isbn LIKE '%" + query + "%'";
+                String sql = "SELECT item.itemid, item.title, item.isbn, COUNT(copy.itemid) AS total_copies, COUNT(copy.availability = 1 OR NULL) AS available_copies FROM item LEFT JOIN copy ON item.itemid = copy.itemid WHERE LOWER(item.title) LIKE '%" + query + "%' OR item.isbn LIKE '%" + query + "%' GROUP BY item.itemid";
                 ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next()) {
-                    items.add(rs.getString("title") + " - " + rs.getString("isbn") + " - " + rs.getString("itemid"));
+                    String itemString = rs.getString("title") + " - " + rs.getString("isbn") + " - Total Copies: " + rs.getInt("total_copies") + ", Available Copies: " + rs.getInt("available_copies");
+                    UUID itemId = UUID.fromString(rs.getString("itemid"));
+                    itemMap.put(itemString, itemId); // Map the item string to its UUID
+                    items.add(itemString);
                 }
                 rs.close();
                 stmt.close();
@@ -124,6 +130,8 @@ public class SearchScene extends Scene {
             }
             resultList.setItems(items);
         });
+
+
 
 
 
