@@ -10,10 +10,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SearchScene extends Scene {
     private Scene startScene;
@@ -55,9 +55,52 @@ public class SearchScene extends Scene {
                 alert.setContentText("Please select at least one book to borrow.");
                 alert.showAndWait();
             } else {
-                // Similar to the original code...
+                try {
+                    Connection conn = DatabaseConnection.getConnection();
+                    String sql = "INSERT INTO public.loan (userid, itemid, dateborrowed, datedue) VALUES (?, ?, ?, ?)";
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+
+                    for (String item : selectedItems) {
+                        // Get item's ID from the selected string
+                        UUID itemId = UUID.fromString(item.split(" - ")[2]);
+
+
+                        // Current date
+                        java.sql.Date dateBorrowed = java.sql.Date.valueOf(LocalDate.now());
+
+                        // Due date is 14 days from the current date
+                        java.sql.Date dateDue = java.sql.Date.valueOf(LocalDate.now().plusDays(14));
+
+                        pstmt.setObject(1, user.getUserid());
+                        pstmt.setObject(2, itemId);
+                        pstmt.setDate(3, dateBorrowed);
+                        pstmt.setDate(4, dateDue);
+
+                        pstmt.addBatch();
+                    }
+
+                    pstmt.executeBatch();
+                    pstmt.close();
+                    conn.close();
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("You have successfully borrowed the selected book(s).");
+                    alert.showAndWait();
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Database Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("There was an error while trying to borrow the book(s). Please try again.");
+                    alert.showAndWait();
+                }
             }
         });
+
+
 
         // Search button
         Button searchButton = new Button("Search");
@@ -68,10 +111,10 @@ public class SearchScene extends Scene {
             try {
                 Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement();
-                String sql = "SELECT title, isbn FROM item WHERE LOWER(title) LIKE '%" + query + "%' OR isbn LIKE '%" + query + "%'";
+                String sql = "SELECT itemid, title, isbn FROM item WHERE LOWER(title) LIKE '%" + query + "%' OR isbn LIKE '%" + query + "%'";
                 ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next()) {
-                    items.add(rs.getString("title") + " - " + rs.getString("isbn"));
+                    items.add(rs.getString("title") + " - " + rs.getString("isbn") + " - " + rs.getString("itemid"));
                 }
                 rs.close();
                 stmt.close();
@@ -81,6 +124,8 @@ public class SearchScene extends Scene {
             }
             resultList.setItems(items);
         });
+
+
 
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
