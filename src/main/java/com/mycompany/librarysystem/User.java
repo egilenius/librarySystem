@@ -1,8 +1,15 @@
 package com.mycompany.librarysystem;
 
+import javafx.scene.control.Alert;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class User {
+
     private UUID userid;
     private String username;
     private String password;
@@ -11,26 +18,63 @@ public class User {
     private int allowedloans;
     private int presentloans;
 
-    String[][] bookData = {
-        {"The Great Gatsby", "no", "2023-05-10"}, //loan
-        {"To Kill a Mockingbird", "no", "2023-05-12"}, //loan
-        {"Pride and Prejudice", "yes", "2023-04-20"}, //finished
-        {"1984", "no", "2023-05-15"}, //loan
-        {"The Catcher in the Rye", "yes", "2023-04-22"}, //finished
-        {"Animal Farm", "yes", "2023-04-25"}, // finished
-        {"Brave New World", "no", "2023-03-20"}, //overdue
-        {"The Hobbit", "no", "2023-03-08"}, //overdue
-        {"Lord of the Flies", "yes", "2023-04-24"}, // finished
-        {"The Da Vinci Code", "no", "2023-05-18"} //loan
-    };
-
-
     public User(String username, UUID userid, int allowedloans, int presentloans) {
         this.username = username;
         this.userid = userid;
         this.allowedloans = allowedloans;
         this.presentloans = presentloans;
     }
+
+
+    public int getPresentLoansFromDatabase() {
+        int presentLoans = 0;
+
+        String query = "SELECT presentloans FROM public.anv WHERE userid = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setObject(1, this.getUserid());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                presentLoans = resultSet.getInt("presentloans");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Database Error");
+            alert.setHeaderText(null);
+            alert.setContentText("There was an error while fetching present loans. Please try again.");
+            alert.showAndWait();
+        }
+        return presentLoans;
+    }
+
+    public int getAllowedLoansFromDatabase() {
+        int allowedLoans = 0;
+
+        String query = "SELECT allowedloans FROM public.anv WHERE userid = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setObject(1, this.getUserid());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                allowedLoans = resultSet.getInt("allowedloans");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Database Error");
+            alert.setHeaderText(null);
+            alert.setContentText("There was an error while fetching allowed loans. Please try again.");
+            alert.showAndWait();
+        }
+        return allowedLoans;
+    }
+
+
+
+
 
     public UUID getUserid() {
         return userid;
@@ -40,40 +84,18 @@ public class User {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public int getAllowedloans() {
-        return allowedloans;
+        return getAllowedLoansFromDatabase();
     }
 
     public int getPresentloans() {
-        return presentloans;
+        return getPresentLoansFromDatabase();
+    }
+
+    public boolean hasReachedLoanLimit() {
+        return this.getPresentloans() >= this.getAllowedloans();
+    }
+    public void setPresentloans(int newPresentLoans) {
     }
 
     // Constructor, getters, setters, and database methods
