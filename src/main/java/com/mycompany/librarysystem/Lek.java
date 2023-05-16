@@ -8,6 +8,15 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import java.io.File;
 import java.sql.*;
+import java.util.UUID;
+
+/*
+Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("Item added!");
+            alert.showAndWait();
+ */
 
 public class Lek extends Application {
 
@@ -28,20 +37,7 @@ public class Lek extends Application {
         Button addButton = new Button("Add");
         addButton.setOnAction(event -> {
                     try {
-
-                        if (addItem()) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Success");
-                            alert.setHeaderText(null);
-                            alert.setContentText("Item added!");
-                            alert.showAndWait();
-                        } else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Error");
-                            alert.setHeaderText(null);
-                            alert.setContentText("Invalid input!");
-                            alert.showAndWait();
-                        }
+                        doThing();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -55,68 +51,36 @@ public class Lek extends Application {
         primaryStage.show();
     }
 
-    private boolean addItem() throws SQLException {
-        //String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (?, ?, ?, ?, ?, ?)";
-        String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (8c5fef02-46bb-4c3c-9938-44a188a447ba, 'Bibeln', '9780141182612', 'Jesus', 'GUD', 8)";
+    private void doThing() throws  SQLException {
+        String query = "select * from item where title = 'Bibeln' and isbn = '9780141182612' and publisher = 'Jesus' and location = 'GUD' and type = 6";
+        UUID uuid = UUID.randomUUID();
 
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new SQLException("PostgreSQL JDBC driver not found");
-        }
-
+        System.out.println(uuid);
+        System.out.println(uuid);
+        System.out.println(uuid);
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-
-             // create a Statement from the connection
-            // Statement statement = conn.createStatement();
-            // insert the data
-             //statement.executeUpdate("INSERT INTO Customers " + "VALUES (1001, 'Simpson', 'Mr.', 'Springfield', 2001)");
-
+             // add typeField input.
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.executeQuery();
-            //ResultSet resultSet = preparedStatement.executeQuery();
+            /*
+             preparedStatement.setString(1, title);
+             preparedStatement.setString(2, ISBN);
+             preparedStatement.setString(3, publisher);
+             preparedStatement.setString(4, location);
+             preparedStatement.setInt(5, type);
+             */
 
+            // execute statement.
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                System.out.println("Has next.");
+            } else {
+                System.out.println("Empty.");
+            }
         }
-        return true;
     }
 
     public static void main(String[] args) {
         launch(args);
     }
-
-
-        /**
-        @Override
-        public void start(Stage primaryStage) {
-
-            // Play song
-            Media media = new Media(new File("C:\\Users\\Sak i Mark\\Documents\\NetBeansProjects\\librarySystem\\pizzaSong.mp3").toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            mediaPlayer.play();
-
-
-            Label label = new Label("Help!");
-            label.setOnMouseClicked(mouseEvent->{System.out.println("Hello World!");});
-            Menu menu = new Menu("", label);
-            MenuBar menuBar = new MenuBar();
-            menuBar.getMenus().add(menu);
-
-
-            StackPane root = new StackPane();
-            root.getChildren().add(menuBar);
-
-            Scene scene = new Scene(root, 300, 250);
-
-            primaryStage.setTitle("Hello World!");
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }
-
-        public static void main(String[] args) {
-            launch(args);
-        }
-    */
 }

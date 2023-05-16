@@ -37,15 +37,15 @@ public class LoanScene extends Scene {
 
         // Create labels for each list
         Label labelOverdue = new Label("Overdue");
-        Label label2 = new Label("Loans");
-        Label label3 = new Label("Finished");
+        Label labelLoans = new Label("Loans");
+        Label labelFinished = new Label("Finished");
 
         // Add labels and lists
         grid.add(labelOverdue, 0, 0);
         grid.add(listOverdue, 1, 0);
-        grid.add(label2, 0, 1);
+        grid.add(labelLoans, 0, 1);
         grid.add(listCurrentLoans, 1, 1);
-        grid.add(label3, 0, 2);
+        grid.add(labelFinished, 0, 2);
         grid.add(listFinishedLoans, 1, 2);
 
         // Add grid to center of BorderPane

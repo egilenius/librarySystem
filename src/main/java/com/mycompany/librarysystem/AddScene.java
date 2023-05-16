@@ -1,5 +1,7 @@
 package com.mycompany.librarysystem;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,16 +12,19 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class AddScene extends Scene {
     User user;
-    private static final String DB_URL = "jdbc:postgresql://hattie.db.elephantsql.com:5432/oaehwzla";
-    private static final String DB_USER = "oaehwzla";
-    private static final String DB_PASSWORD = "aj3XjlSmghfN4LGUZE12mOfUTDaKXiJY";
+    private int loanability = 1;
 
     public AddScene(Stage stage, Scene startScene, User user) {
         super(new BorderPane(), 600, 400);
         this.user = user;
+
         // create main layout
         BorderPane borderPane = (BorderPane) this.getRoot();
         HomeScene homeScene = new HomeScene(stage, startScene, user);
@@ -32,208 +37,212 @@ public class AddScene extends Scene {
         form.setVgap(10);
         form.setHgap(10);
 
-        /**
-         // Item ID
-         Label itemIdLabel = new Label("Item ID:");
-         TextField itemIdField = new TextField();
-         form.add(itemIdLabel, 0, 0);
-         form.add(itemIdField, 1, 0); */
-
         // Title
         Label titleLabel = new Label("Title:");
         TextField titleField = new TextField();
         form.add(titleLabel, 0, 1);
         form.add(titleField, 1, 1);
 
-        // ISBN
-        Label isbnLabel = new Label("ISBN:");
-        TextField isbnField = new TextField();
-        form.add(isbnLabel, 0, 2);
-        form.add(isbnField, 1, 2);
-
         // Publisher
         Label publisherLabel = new Label("Publisher:");
         TextField publisherField = new TextField();
-        form.add(publisherLabel, 0, 3);
-        form.add(publisherField, 1, 3);
+        form.add(publisherLabel, 0, 2);
+        form.add(publisherField, 1, 2);
 
         // Location
         Label locationLabel = new Label("Location:");
         TextField locationField = new TextField();
-        form.add(locationLabel, 0, 4);
-        form.add(locationField, 1, 4);
+        form.add(locationLabel, 0, 3);
+        form.add(locationField, 1, 3);
 
         // Type
-        Label typeLabel = new Label("Type:");
-        TextField typeField = new TextField();
-        form.add(typeLabel, 0, 5);
-        form.add(typeField, 1, 5);
+        ObservableList<String> options = FXCollections.observableArrayList(
+                "Course literature", "Other literature", "Magazine", "DVD");
+        ChoiceBox<String> typeBox = new ChoiceBox<>(options);
+        typeBox.getSelectionModel().selectFirst();
+        form.add(new Label("Choose an option:"), 0, 4);
+        form.add(typeBox, 1, 4);
 
-        /**
-         // Release Date
-         Label releaseDateLabel = new Label("Release Date:");
-         TextField releaseDateField = new TextField();
-         form.add(releaseDateLabel, 0, 6);
-         form.add(releaseDateField, 1, 6); */
+        // Create a map to map options to integer values
+        Map<String, Integer> optionMap = new HashMap<>();
+        optionMap.put("Course literature", 1);
+        optionMap.put("Other literature", 2);
+        optionMap.put("Magazine", 3);
+        optionMap.put("DVD", 4);
 
-        // create add button
+        // Keywords/genres
+        Label keywordsLabel = new Label("Keywords: ");
+        TextField keywordsField = new TextField();
+        form.add(keywordsLabel, 0, 5);
+        form.add(keywordsField, 1, 5);
+
+        // Authors/actors
+        Label authorsLabel = new Label("Authors: ");
+        TextField authorssField = new TextField();
+        form.add(authorsLabel, 0, 6);
+        form.add(authorssField, 1, 6);
+
+        // ISBN
+        Label isbnLabel = new Label("ISBN:");
+        TextField isbnField = new TextField();
+        form.add(isbnLabel, 3, 1);
+        form.add(isbnField, 4, 1);
+
+        // Loanability
+        Label loanabilityLabel = new Label("Loanable:");
+        ToggleButton loanabilityButton = new ToggleButton("True");
+        loanabilityButton.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            loanabilityButton.setText(newVal ? "True" : "False");
+        });
+        loanabilityButton.setSelected(true); // Set the initial state of the button
+        loanabilityButton.setOnAction(e -> toggleButtonHandler()); // Set the event handler for button clicks
+        loanabilityButton.setMinWidth(50); // Set the minimum width of the button
+        form.add(loanabilityLabel, 3, 2);
+        form.add(loanabilityButton, 4, 2);
+
+        // age
+        Label ageLabel = new Label("Age:");
+        TextField ageField = new TextField();
+        form.add(ageLabel, 3, 3);
+        form.add(ageField, 4, 3);
+
+        // country
+        Label countryLabel = new Label("Country:");
+        TextField countryField = new TextField();
+        form.add(countryLabel, 3, 4);
+        form.add(countryField, 4, 4);
+
+        // Add listener to the typeBox
+        typeBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() == 0) {
+                // If course literature
+                keywordsLabel.setText("Keywords: ");
+                authorsLabel.setText("Authors: ");
+                keywordsField.setDisable(false);
+                authorssField.setDisable(false);
+                isbnField.setDisable(false);
+                loanabilityButton.setDisable(false);
+                ageField.setDisable(true);
+                countryField.setDisable(true);
+            } else if (newValue.intValue() == 1) {
+                // if other literature
+                keywordsLabel.setText("Keywords: ");
+                authorsLabel.setText("Authors: ");
+                keywordsField.setDisable(false);
+                authorssField.setDisable(false);
+                isbnField.setDisable(true);
+                loanabilityButton.setDisable(true);
+                ageField.setDisable(true);
+                countryField.setDisable(true);
+            } else if (newValue.intValue() == 2) {
+                // if magazine
+                keywordsLabel.setText("- - - -");
+                authorsLabel.setText("- - - -");
+                keywordsField.setDisable(true);
+                authorssField.setDisable(true);
+                isbnField.setDisable(true);
+                loanabilityButton.setDisable(true);
+                ageField.setDisable(true);
+                countryField.setDisable(true);
+            }else{
+                // if DVD
+                keywordsLabel.setText("Genres: ");
+                authorsLabel.setText("Actors: ");
+                keywordsField.setDisable(false);
+                authorssField.setDisable(false);
+                isbnField.setDisable(true);
+                loanabilityButton.setDisable(true);
+                ageField.setDisable(false);
+                countryField.setDisable(false);
+            }
+        });
+
         Button addButton = new Button("Add");
         addButton.setOnAction(event -> {
-                    try {
+            try {
+                String selectedOption = typeBox.getSelectionModel().getSelectedItem();
+                int selectedValue = optionMap.get(selectedOption);
+            addItem(titleField.getText(), isbnField.getText(), publisherField.getText(), locationField.getText(), selectedValue);
 
-                        if (addItem(titleField.getText(), isbnField.getText(), publisherField.getText(), locationField.getText(), Integer.parseInt(typeField.getText()))) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Success");
-                            alert.setHeaderText(null);
-                            alert.setContentText("Item added!");
-                            alert.showAndWait();
-                        } else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Error");
-                            alert.setHeaderText(null);
-                            alert.setContentText("Invalid input!");
-                            alert.showAndWait();
-                        }
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-
-
-                }
-        );
-        /**
-         // create add button
-         Button addButton = new Button("Add");
-         addButton.setOnAction(event -> {
-         try {
-         // connect to database
-         Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-
-         // prepare statement
-         PreparedStatement stmt = conn.prepareStatement(
-         "INSERT INTO library_items (title, isbn, publisher, physical_location, type) VALUES (?, ?, ?, ?, ?)");
-         stmt.setString(1, titleField.getText());
-         stmt.setString(2, isbnField.getText());
-         stmt.setString(3, publisherField.getText());
-         stmt.setString(4, locationField.getText());
-         stmt.setString(5, typeField.getText());
-
-         // execute statement
-         int rowsAffected = stmt.executeUpdate();
-
-         if (rowsAffected == 1) {
-         // show success message and return to home scene
-         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-         alert.setTitle("Success");
-         alert.setHeaderText(null);
-         alert.setContentText("Item added successfully.");
-         alert.showAndWait();
-
-         //stage.setScene(homeScene);
-         } else {
-         // show error message
-         Alert alert = new Alert(Alert.AlertType.ERROR);
-         alert.setTitle("Error");
-         alert.setHeaderText(null);
-         alert.setContentText("Failed to add item.");
-         alert.showAndWait();
-         }
-         } catch (SQLException ex) {
-         // show error message
-         Alert alert = new Alert(Alert.AlertType.ERROR);
-         alert.setTitle("Error");
-         alert.setHeaderText(null);
-         alert.setContentText("Failed to connect to database.");
-         alert.showAndWait();
-         }
-         }
-         );*/
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        });
 
         // add form to layout
         borderPane.setCenter(form);
         borderPane.setRight(new VBox(addButton));
     }
 
-    private boolean addItem(String title, String ISBN, String publisher, String location, int type) throws SQLException {
-       //String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (?, ?, ?, ?, ?, ?)";
-       String query = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (8c5fef02-46bb-4c3c-9938-44a188a447ba, 'Bibeln', '9780141182612', 'Jesus', 'GUD', 8)";
-
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new SQLException("PostgreSQL JDBC driver not found");
+    private void toggleButtonHandler() {
+        if (getLoanability() == 3){
+            setLoanability(1);
+        } else{
+            setLoanability(3);
         }
-
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-
-            preparedStatement.setString(1, "uuid_generate_v4()");
-            preparedStatement.setString(2, title);
-            preparedStatement.setString(3, ISBN);
-            preparedStatement.setString(4, publisher);
-            preparedStatement.setString(5, location);
-            preparedStatement.setString(6, String.valueOf(type));
-
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-        }
-        return true;
     }
 
+    private void addItem(String title, String ISBN, String publisher, String location, int type) throws SQLException {
+        String queryCheck = "SELECT * FROM item WHERE title = ? AND isbn = ? AND publisher = ? AND location = ? AND type = ?";
+        String queryItem = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (cast(? as uuid), ?, ?, ?, ?, ?)";
+        String queryCopy = "INSERT INTO public.copy (copyid, itemid, availability, lastloan) VALUES (uuid_generate_v4(), cast(? as uuid), ?, null)";
+        UUID uuid = UUID.randomUUID();
+        String uuidString = uuid.toString();
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement psCheck = connection.prepareStatement(queryCheck);
+             PreparedStatement psItem = connection.prepareStatement(queryItem);
+             PreparedStatement psCopy = connection.prepareStatement(queryCopy)) {
+
+            // add typeField input to check
+            psCheck.setString(1, title);
+            psCheck.setString(2, ISBN);
+            psCheck.setString(3, publisher);
+            psCheck.setString(4, location);
+            psCheck.setInt(5, type);
+            // execute queryCheck statement.
+            ResultSet resultSet = psCheck.executeQuery();
+
+            // if item is inexistent, create item.
+            if (!resultSet.next()){
+                psItem.setString(1, uuidString);
+                psItem.setString(2, title);
+                psItem.setString(3, ISBN);
+                psItem.setString(4, publisher);
+                psItem.setString(5, location);
+                psItem.setInt(6, type);
+                // execute item creation statement.
+                psItem.executeUpdate();
+                // TODO check why can't insert like this.
+                TimeUnit.SECONDS.sleep(1);
+                // execute copy creation statement.
+                psCopy.setString(1, uuidString);
+                psCopy.setInt(2, getLoanability());
+                psCopy.executeUpdate();
+            } else {
+                // retrieve itemid and use as fk for new copy
+                String itemid = resultSet.getString("itemid");
+                psCopy.setString(1, itemid);
+                psCopy.setInt(2, getLoanability());
+                psCopy.executeUpdate();
+            }
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("Item added!");
+            alert.showAndWait();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public int getLoanability() {
+        return loanability;
+    }
+    public void setLoanability(int loanability) {
+        this.loanability = loanability;
+    }
 }
-
-
-/**
- // create form fields
- Label physicalLocationLabel = new Label("Physical Location:");
- TextField physicalLocationField = new TextField();
-
- Label authorDirectorLabel = new Label("Author/Director:");
- TextField authorDirectorField = new TextField();
-
- Label isbnLabel = new Label("ISBN:");
- TextField isbnField = new TextField();
-
- Label classificationLabel = new Label("Classification:");
- TextField classificationField = new TextField();
-
- Label genreLabel = new Label("Genre:");
- TextField genreField = new TextField();
-
- Label ageRatingLabel = new Label("Age Rating:");
- TextField ageRatingField = new TextField();
-
- Label productionCountryLabel = new Label("Production Country:");
- TextField productionCountryField = new TextField();
-
- Label actorsLabel = new Label("Actors:");
- TextField actorsField = new TextField();
-
- // add form fields to form
- form.add(physicalLocationLabel, 0, 0);
- form.add(physicalLocationField, 1, 0);
-
- form.add(authorDirectorLabel, 0, 1);
- form.add(authorDirectorField, 1, 1);
-
- form.add(isbnLabel, 0, 2);
- form.add(isbnField, 1, 2);
-
- form.add(classificationLabel, 0, 3);
- form.add(classificationField, 1, 3);
-
- form.add(genreLabel, 0, 4);
- form.add(genreField, 1, 4);
-
- form.add(ageRatingLabel, 0, 5);
- form.add(ageRatingField, 1, 5);
-
- form.add(productionCountryLabel, 0, 6);
- form.add(productionCountryField, 1, 6);
-
- form.add(actorsLabel, 0, 7);
- form.add(actorsField, 1, 7);
- */

@@ -91,10 +91,12 @@ public class HomeScene extends Scene {
         } else {
             LogoutButton = new Button("Not logged in");
             // Disable features that require a logged-in user
+            /*
             LoanButton.setDisable(true);
             dueButton.setDisable(true);
             addButton.setDisable(true);
             updateButton.setDisable(true);
+            */
         }
         GridPane.setConstraints(LogoutButton, 3, 0);
         LogoutButton.setOnAction(e -> {
