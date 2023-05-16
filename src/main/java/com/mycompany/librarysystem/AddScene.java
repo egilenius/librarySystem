@@ -60,7 +60,7 @@ public class AddScene extends Scene {
                 "Course literature", "Other literature", "Magazine", "DVD");
         ChoiceBox<String> typeBox = new ChoiceBox<>(options);
         typeBox.getSelectionModel().selectFirst();
-        form.add(new Label("Choose an option:"), 0, 4);
+        form.add(new Label("Choose type:"), 0, 4);
         form.add(typeBox, 1, 4);
 
         // Create a map to map options to integer values
@@ -70,23 +70,11 @@ public class AddScene extends Scene {
         optionMap.put("Magazine", 3);
         optionMap.put("DVD", 4);
 
-        // Keywords/genres
-        Label keywordsLabel = new Label("Keywords: ");
-        TextField keywordsField = new TextField();
-        form.add(keywordsLabel, 0, 5);
-        form.add(keywordsField, 1, 5);
-
-        // Authors/actors
-        Label authorsLabel = new Label("Authors: ");
-        TextField authorssField = new TextField();
-        form.add(authorsLabel, 0, 6);
-        form.add(authorssField, 1, 6);
-
         // ISBN
         Label isbnLabel = new Label("ISBN:");
         TextField isbnField = new TextField();
-        form.add(isbnLabel, 3, 1);
-        form.add(isbnField, 4, 1);
+        form.add(isbnLabel, 0, 5);
+        form.add(isbnField, 1, 5);
 
         // Loanability
         Label loanabilityLabel = new Label("Loanable:");
@@ -97,63 +85,30 @@ public class AddScene extends Scene {
         loanabilityButton.setSelected(true); // Set the initial state of the button
         loanabilityButton.setOnAction(e -> toggleButtonHandler()); // Set the event handler for button clicks
         loanabilityButton.setMinWidth(50); // Set the minimum width of the button
-        form.add(loanabilityLabel, 3, 2);
-        form.add(loanabilityButton, 4, 2);
-
-        // age
-        Label ageLabel = new Label("Age:");
-        TextField ageField = new TextField();
-        form.add(ageLabel, 3, 3);
-        form.add(ageField, 4, 3);
-
-        // country
-        Label countryLabel = new Label("Country:");
-        TextField countryField = new TextField();
-        form.add(countryLabel, 3, 4);
-        form.add(countryField, 4, 4);
+        form.add(loanabilityLabel, 0, 6);
+        form.add(loanabilityButton, 1, 6);
 
         // Add listener to the typeBox
         typeBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() == 0) {
                 // If course literature
-                keywordsLabel.setText("Keywords: ");
-                authorsLabel.setText("Authors: ");
-                keywordsField.setDisable(false);
-                authorssField.setDisable(false);
                 isbnField.setDisable(false);
                 loanabilityButton.setDisable(false);
-                ageField.setDisable(true);
-                countryField.setDisable(true);
             } else if (newValue.intValue() == 1) {
                 // if other literature
-                keywordsLabel.setText("Keywords: ");
-                authorsLabel.setText("Authors: ");
-                keywordsField.setDisable(false);
-                authorssField.setDisable(false);
-                isbnField.setDisable(true);
+                isbnField.setDisable(false);
                 loanabilityButton.setDisable(true);
-                ageField.setDisable(true);
-                countryField.setDisable(true);
+                loanabilityButton.setSelected(true);
             } else if (newValue.intValue() == 2) {
                 // if magazine
-                keywordsLabel.setText("- - - -");
-                authorsLabel.setText("- - - -");
-                keywordsField.setDisable(true);
-                authorssField.setDisable(true);
                 isbnField.setDisable(true);
                 loanabilityButton.setDisable(true);
-                ageField.setDisable(true);
-                countryField.setDisable(true);
+                loanabilityButton.setSelected(true);
             }else{
                 // if DVD
-                keywordsLabel.setText("Genres: ");
-                authorsLabel.setText("Actors: ");
-                keywordsField.setDisable(false);
-                authorssField.setDisable(false);
                 isbnField.setDisable(true);
                 loanabilityButton.setDisable(true);
-                ageField.setDisable(false);
-                countryField.setDisable(false);
+                loanabilityButton.setSelected(true);
             }
         });
 

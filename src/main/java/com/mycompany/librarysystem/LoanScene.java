@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -52,6 +53,12 @@ public class LoanScene extends Scene {
         borderPane.setCenter(grid);
 
         fetchUserLoans(user, listOverdue, listCurrentLoans, listFinishedLoans);
+
+        // Return button
+        Label returnLabel = new Label("Return: ");
+        TextField locationField = new TextField();
+        grid.add(returnLabel, 0, 3);
+        grid.add(locationField, 1, 3);
 
         // Show scene
         stage.setScene(this);
