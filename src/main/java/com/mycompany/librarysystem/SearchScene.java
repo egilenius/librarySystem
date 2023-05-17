@@ -52,7 +52,6 @@ public class SearchScene extends Scene {
 
 
         User[] currentUser = new User[]{user};
-
         borrowButton.setOnAction(e -> {
             ObservableList<String> selectedItems = resultList.getSelectionModel().getSelectedItems();
 
@@ -75,7 +74,7 @@ public class SearchScene extends Scene {
                     Connection conn = DatabaseConnection.getConnection();
                     String sql = "INSERT INTO public.loan (userid, itemid, dateborrowed, datedue) VALUES (?, ?, ?, ?)";
                     PreparedStatement pstmt = conn.prepareStatement(sql);
-                    boolean bookBorrowed = false; // Flag for whether a book was borrowed
+                    int borrowedCount = 0;  // Count of successfully borrowed books
 
                     for (String item : selectedItems) {
                         // Get the UUID from itemMap
@@ -101,17 +100,22 @@ public class SearchScene extends Scene {
                         pstmt.setDate(4, dateDue);
 
                         pstmt.addBatch();
-                        bookBorrowed = true;
+                        borrowedCount++;  // Increment the count as the book is successfully added for borrowing
                     }
 
                     pstmt.executeBatch();
+
+                    // Update present loans
+                    int presentLoans = user.getPresentLoansFromDatabase();
+                    updatePresentLoans(user, presentLoans + borrowedCount);
+
                     currentUser[0] = getUpdatedUser(currentUser[0].getUserid()); // Update user with the latest data from the database
 
                     pstmt.close();
                     conn.close();
 
                     // Only show the success message if a book was borrowed
-                    if (bookBorrowed) {
+                    if (borrowedCount > 0) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Success");
                         alert.setHeaderText(null);
@@ -129,7 +133,6 @@ public class SearchScene extends Scene {
                 }
             }
         });
-
 
 
 
@@ -212,6 +215,7 @@ public class SearchScene extends Scene {
     }
 
     public void updatePresentLoans(User user, int newPresentLoans) {
+        user.getPresentLoansFromDatabase();
         String query = "UPDATE public.anv SET presentloans = ? WHERE userid = ?";
         Connection connection = null;
         PreparedStatement preparedStatement = null;
