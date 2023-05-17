@@ -215,7 +215,6 @@ public class SearchScene extends Scene {
     }
 
     public void updatePresentLoans(User user, int newPresentLoans) {
-        user.getPresentLoansFromDatabase();
         String query = "UPDATE public.anv SET presentloans = ? WHERE userid = ?";
         Connection connection = null;
         PreparedStatement preparedStatement = null;
