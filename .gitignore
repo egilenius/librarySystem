@@ -30,3 +30,4 @@ target/classes/com/mycompany/librarysystem/SearchScene.class
 target/classes/com/mycompany/librarysystem/StartScreen.class
 target/classes/com/mycompany/librarysystem/SystemInfo.class
 *.class
+*.class

@@ -3,18 +3,23 @@ package com.mycompany.librarysystem;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class LoanScene extends Scene {
     private Scene startScene;
     User user;
+    private Map<String, UUID> itemMap = new HashMap<>();
+
 
     public LoanScene(Stage stage, Scene startScene, User user) {
         super(new BorderPane(), 700, 300);
@@ -31,34 +36,44 @@ public class LoanScene extends Scene {
         grid.setVgap(8);
         grid.setHgap(10);
 
-        // Create four ListView components
+        // Create ListView components
         ListView<String> listOverdue = new ListView<>();
         ListView<String> listCurrentLoans = new ListView<>();
         ListView<String> listFinishedLoans = new ListView<>();
 
+        Button returnButton = new Button("Return Selected");
+
         // Create labels for each list
         Label labelOverdue = new Label("Overdue");
-        Label labelLoans = new Label("Loans");
-        Label labelFinished = new Label("Finished");
+        Label label2 = new Label("Loans");
+        Label label3 = new Label("Finished");
 
         // Add labels and lists
         grid.add(labelOverdue, 0, 0);
         grid.add(listOverdue, 1, 0);
-        grid.add(labelLoans, 0, 1);
+        grid.add(label2, 0, 1);
         grid.add(listCurrentLoans, 1, 1);
-        grid.add(labelFinished, 0, 2);
+        grid.add(label3, 0, 2);
         grid.add(listFinishedLoans, 1, 2);
+        grid.add(returnButton, 2, 1);
+
 
         // Add grid to center of BorderPane
         borderPane.setCenter(grid);
 
         fetchUserLoans(user, listOverdue, listCurrentLoans, listFinishedLoans);
 
-        // Return button
-        Label returnLabel = new Label("Return: ");
-        TextField locationField = new TextField();
-        grid.add(returnLabel, 0, 3);
-        grid.add(locationField, 1, 3);
+        returnButton.setOnAction(e -> {
+            String selectedItem = listCurrentLoans.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                UUID itemId = itemMap.get(selectedItem);
+                returnBook(user, itemId);
+                listCurrentLoans.getItems().remove(selectedItem);
+                listFinishedLoans.getItems().add(selectedItem);
+            }
+        });
+
+
 
         // Show scene
         stage.setScene(this);
@@ -78,9 +93,13 @@ public class LoanScene extends Scene {
             LocalDate today = LocalDate.now();
 
             while (resultSet.next()) {
+                UUID itemId = (UUID) resultSet.getObject("itemid");
                 String title = resultSet.getString("title");
                 boolean finished = resultSet.getBoolean("finished");
                 LocalDate returnDate = resultSet.getDate("datedue").toLocalDate();
+
+                itemMap.put(title, itemId);
+
 
                 if (finished) {
                     listFinishedLoans.getItems().add(title);
@@ -94,4 +113,19 @@ public class LoanScene extends Scene {
             ex.printStackTrace();
         }
     }
+    private void returnBook(User user, UUID itemId) {
+        String query = "UPDATE public.loan SET finished = true WHERE userid = ? AND itemid = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setObject(1, user.getUserid());
+            preparedStatement.setObject(2, itemId);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
