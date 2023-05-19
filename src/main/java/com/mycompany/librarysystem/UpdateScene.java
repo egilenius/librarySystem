@@ -29,7 +29,7 @@ public class UpdateScene extends Scene {
             {"The Da Vinci Code", "Dan Brown", "9780307474278", "Thriller"}
     };
 
-    public UpdateScene(Stage stage, Scene startScene, User user) {
+    public UpdateScene(Stage stage, User user) {
         /**
         super(new GridPane(), 700, 300);
         GridPane grid = (GridPane) this.getRoot();
@@ -45,8 +45,8 @@ public class UpdateScene extends Scene {
         this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
         this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene, user);
-        Node buttons = homeScene.getButtons(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, user);
+        Node buttons = homeScene.getButtons(stage);
         borderPane.setTop(buttons);
 
 

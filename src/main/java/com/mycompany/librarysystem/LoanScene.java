@@ -21,13 +21,12 @@ public class LoanScene extends Scene {
     private Map<String, UUID> itemMap = new HashMap<>();
 
 
-    public LoanScene(Stage stage, Scene startScene, User user) {
+    public LoanScene(Stage stage, User user) {
         super(new BorderPane(), 700, 300);
         this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
-        this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene, user);
-        Node buttons = homeScene.getButtons(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, user);
+        Node buttons = homeScene.getButtons(stage);
         borderPane.setTop(buttons);
 
         // Create main grid pane

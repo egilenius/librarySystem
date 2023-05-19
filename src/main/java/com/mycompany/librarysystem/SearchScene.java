@@ -18,19 +18,16 @@ import java.util.UUID;
 
 
 public class SearchScene extends Scene {
-    private Scene startScene;
     private HashMap<String, UUID> itemMap = new HashMap<>();
-    User user;
+    private User user;
 
-
-    public SearchScene(Stage stage, Scene startScene, User user) {
+    public SearchScene(Stage stage, User user) {
 
         super(new BorderPane(), 700, 300);
         this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
-        this.startScene = startScene;
-        HomeScene homeScene = new HomeScene(stage, startScene, user);
-        Node buttons = homeScene.getButtons(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, user);
+        Node buttons = homeScene.getButtons(stage);
         borderPane.setTop(buttons);
 
         // Search bar
@@ -49,6 +46,9 @@ public class SearchScene extends Scene {
         // Borrow button
         Button borrowButton = new Button("Borrow");
         GridPane.setConstraints(borrowButton, 1, 7);
+        if (getUser() == null){
+            borrowButton.setDisable(true);
+        }
 
 
         User[] currentUser = new User[]{user};
@@ -293,9 +293,13 @@ public class SearchScene extends Scene {
         return updatedUser;
     }
 
+    public User getUser() {
+        return user;
+    }
 
-
-
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 }
 
