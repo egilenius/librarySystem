@@ -137,9 +137,12 @@ public class AddScene extends Scene {
         }
     }
 
+
+
     private void addItem(String title, String ISBN, String publisher, String location, int type) throws SQLException {
         String queryCheck = "SELECT * FROM item WHERE title = ? AND isbn = ? AND publisher = ? AND location = ? AND type = ?";
         String queryItem = "INSERT INTO public.item (itemid, title, isbn, publisher, location, type) VALUES (cast(? as uuid), ?, ?, ?, ?, ?)";
+        String queryCheck2 = "SELECT itemid FROM item WHERE title = ? AND isbn = ? AND publisher = ? AND location = ? AND type = ?";
         String queryCopy = "INSERT INTO public.copy (copyid, itemid, availability, lastloan) VALUES (uuid_generate_v4(), cast(? as uuid), ?, null)";
         UUID uuid = UUID.randomUUID();
         String uuidString = uuid.toString();
@@ -147,7 +150,11 @@ public class AddScene extends Scene {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement psCheck = connection.prepareStatement(queryCheck);
              PreparedStatement psItem = connection.prepareStatement(queryItem);
+             PreparedStatement psCheck2 = connection.prepareStatement(queryCheck2);
              PreparedStatement psCopy = connection.prepareStatement(queryCopy)) {
+
+            //Start transaction
+            connection.setAutoCommit(false);
 
             // add typeField input to check
             psCheck.setString(1, title);
@@ -169,7 +176,6 @@ public class AddScene extends Scene {
                 // execute item creation statement.
                 psItem.executeUpdate();
                 // TODO check why can't insert like this.
-                TimeUnit.SECONDS.sleep(1);
                 // execute copy creation statement.
                 psCopy.setString(1, uuidString);
                 psCopy.setInt(2, getLoanability());
@@ -188,10 +194,10 @@ public class AddScene extends Scene {
             alert.setContentText("Item added!");
             alert.showAndWait();
 
+            connection.commit(); // Commit the transaction
+
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
     public int getLoanability() {

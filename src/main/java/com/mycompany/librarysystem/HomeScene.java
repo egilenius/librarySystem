@@ -123,7 +123,7 @@ public class HomeScene extends Scene {
         borderPane.setTop(topGrid);
 
         // Available buttons depending on kind of user
-
+        /**
         if (getUser() == null){
             LoanButton.setDisable(true);
             dueButton.setDisable(true);
@@ -149,6 +149,7 @@ public class HomeScene extends Scene {
             GridPane.setConstraints(usernameLabel, 4, 1);
             topGrid.getChildren().addAll(loginLabel, usernameLabel);
         }
+         */
 
         return borderPane;
     }
