@@ -18,6 +18,9 @@ import javafx.stage.Stage;
 
         @Override
         public void start(Stage stage) throws Exception {
+            Scene homeScene = new HomeScene(stage, user);
+            stage.setScene(homeScene);
+            /**
             stage.setTitle("Start Screen");
 
             grid = new GridPane();
@@ -111,6 +114,7 @@ import javafx.stage.Stage;
 
             // initially disable buttons
             updateButtonState();
+             */
         }
 
         private void updateButtonState() {

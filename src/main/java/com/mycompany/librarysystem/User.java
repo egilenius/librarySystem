@@ -25,7 +25,6 @@ public class User {
         this.presentloans = presentloans;
     }
 
-
     public int getPresentLoansFromDatabase() {
         int presentLoans = 0;
 
@@ -71,10 +70,6 @@ public class User {
         }
         return allowedLoans;
     }
-
-
-
-
 
     public UUID getUserid() {
         return userid;

@@ -20,14 +20,14 @@ public class LoginScene extends Scene {
 
     private User user;
 
-    public LoginScene(Stage stage, Scene startScene, User user) {
+    public LoginScene(Stage stage) {
         super(new GridPane(), 300, 150);
         GridPane grid = (GridPane) this.getRoot();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
         grid.setHgap(10);
 
-        this.user = user;
+        // TODO add return button
 
         //Username Label
         Label usernameLabel = new Label("Username:");
@@ -58,7 +58,7 @@ public class LoginScene extends Scene {
                 User loggedInUser = validateUser(usernameInput.getText(), passwordInput.getText());
                 if (loggedInUser != null) {
                     this.user = loggedInUser;
-                    HomeScene homeScene = new HomeScene(stage, startScene, loggedInUser);
+                    HomeScene homeScene = new HomeScene(stage, loggedInUser);
                     stage.setScene(homeScene);
 
                 } else {

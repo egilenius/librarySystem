@@ -18,13 +18,13 @@ import javafx.stage.Stage;
 public class DueScene extends Scene {
     User user;
 
-    public DueScene(Stage stage, Scene startScene, User user) {
+    public DueScene(Stage stage, User user) {
         super(new BorderPane(), 400, 300);
         this.user = user;
         BorderPane borderPane = (BorderPane) this.getRoot();
 
-        HomeScene homeScene = new HomeScene(stage, startScene, user);
-        Node buttons = homeScene.getButtons(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage,  user);
+        Node buttons = homeScene.getButtons(stage);
         borderPane.setTop(buttons);
 
         // Create main grid pane

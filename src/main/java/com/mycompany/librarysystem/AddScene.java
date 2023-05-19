@@ -21,14 +21,14 @@ public class AddScene extends Scene {
     User user;
     private int loanability = 1;
 
-    public AddScene(Stage stage, Scene startScene, User user) {
+    public AddScene(Stage stage, User user) {
         super(new BorderPane(), 600, 400);
         this.user = user;
 
         // create main layout
         BorderPane borderPane = (BorderPane) this.getRoot();
-        HomeScene homeScene = new HomeScene(stage, startScene, user);
-        Node buttons = homeScene.getButtons(stage, startScene);
+        HomeScene homeScene = new HomeScene(stage, user);
+        Node buttons = homeScene.getButtons(stage);
         borderPane.setTop(buttons);
 
         // create form
