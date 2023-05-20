@@ -19,6 +19,9 @@ import java.util.*;
 
 public class UpdateScene extends Scene {
     private HashMap<String, UUID> itemMap = new HashMap<>();
+    private String itemid2;
+
+    private String copyid2;
 
 
     User user;
@@ -85,14 +88,14 @@ public class UpdateScene extends Scene {
             try {
                 Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement();
-                String sql = "SELECT item.itemid, item.title, item.isbn, item.publisher, item.location, item.type, copy.availability " +
+                String sql = "SELECT item.itemid, item.title, item.isbn, item.publisher, item.location, item.type, copy.availability, copy.copyid " +
                         "FROM public.item " +
                         "JOIN public.copy ON item.itemid = copy.itemid " +
                         "WHERE LOWER(item.title) LIKE '%" + query + "%' " +
                         "   OR item.isbn LIKE '%" + query + "%' " +
                         "   OR item.publisher LIKE '%" + query + "%' " +
                         "   OR item.location LIKE '%" + query + "%' " +
-                        "GROUP BY item.itemid, copy.availability";
+                        "GROUP BY item.itemid, copy.availability, copy.copyid";
                 ResultSet rs = stmt.executeQuery(sql);
 
                 // Retrieve attribute names from ResultSet
@@ -145,148 +148,6 @@ public class UpdateScene extends Scene {
             resultList.setItems(items);
         });
 
-
-        Button updateButton = new Button("Update");
-        GridPane.setConstraints(updateButton, 1, 7);
-        /**
-        // TODO connect to database
-        // Update item
-        // Define attributeNamesBuilder variable
-        StringBuilder attributeNamesBuilder = new StringBuilder();
-        updateButton.setOnAction(e -> {
-            String selectedItem = resultList.getSelectionModel().getSelectedItem();
-            if (selectedItem == null || selectedItem.equals(attributeNamesBuilder.toString().trim())) {
-                // No item selected or selected item is the attribute names row
-                return;
-            }
-
-            UUID itemId = itemMap.get(selectedItem);
-            if (itemId == null) {
-                // Item ID not found in the map
-                return;
-            }
-
-            // Retrieve the item and copy details from the database
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                Statement stmt = conn.createStatement();
-                String sql = "SELECT item.title, item.isbn, item.publisher, item.location, item.type, copy.availability " +
-                        "FROM public.item " +
-                        "JOIN public.copy ON item.itemid = copy.itemid " +
-                        "WHERE item.itemid = '" + itemId + "'";
-                ResultSet rs = stmt.executeQuery(sql);
-
-                if (rs.next()) {
-                    // Retrieve the current values
-                    String currentTitle = rs.getString("title");
-                    String currentISBN = rs.getString("isbn");
-                    String currentPublisher = rs.getString("publisher");
-                    String currentLocation = rs.getString("location");
-                    String currentType = rs.getString("type");
-                    boolean currentAvailability = rs.getBoolean("availability");
-
-                    // Create the update item form
-                    GridPane updateItemForm = new GridPane();
-                    updateItemForm.setVgap(10);
-                    updateItemForm.setHgap(10);
-                    updateItemForm.setPadding(new Insets(10));
-
-                    TextField titleField = new TextField(currentTitle);
-                    TextField isbnField = new TextField(currentISBN);
-                    TextField publisherField = new TextField(currentPublisher);
-                    TextField locationField = new TextField(currentLocation);
-                    TextField typeField = new TextField(currentType);
-                    CheckBox availabilityCheckBox = new CheckBox("Available");
-                    availabilityCheckBox.setSelected(currentAvailability);
-
-                    updateItemForm.add(new Label("Title:"), 0, 0);
-                    updateItemForm.add(titleField, 1, 0);
-                    updateItemForm.add(new Label("ISBN:"), 0, 1);
-                    updateItemForm.add(isbnField, 1, 1);
-                    updateItemForm.add(new Label("Publisher:"), 0, 2);
-                    updateItemForm.add(publisherField, 1, 2);
-                    updateItemForm.add(new Label("Location:"), 0, 3);
-                    updateItemForm.add(locationField, 1, 3);
-                    updateItemForm.add(new Label("Type:"), 0, 4);
-                    updateItemForm.add(typeField, 1, 4);
-                    updateItemForm.add(availabilityCheckBox, 0, 5, 2, 1);
-
-                    // Create the dialog
-                    Dialog<ButtonType> dialog = new Dialog<>();
-                    dialog.initOwner(stage);
-                    dialog.setTitle("Update Item");
-                    dialog.setHeaderText("Update the item details");
-                    dialog.getDialogPane().setContent(updateItemForm);
-
-                    // Add buttons to the dialog
-                    ButtonType updateButtonType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
-                    dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
-
-                    // Set the result converter for the dialog
-                    dialog.setResultConverter(buttonType -> {
-                        if (buttonType == updateButtonType) {
-                            // Return the updated item details as a string array
-                            return new String[]{
-                                    titleField.getText(),
-                                    isbnField.getText(),
-                                    publisherField.getText(),
-                                    locationField.getText(),
-                                    typeField.getText(),
-                                    String.valueOf(availabilityCheckBox.isSelected())
-                            };
-                        }
-                        return null;
-                    });
-
-                    // Show the dialog and process the result
-                    Optional<ButtonType> result = dialog.showAndWait();
-                    result.ifPresent(buttonType -> {
-                        if (buttonType == updateButtonType) {
-                            // Retrieve the updated item details
-                            String[] updatedItemDet ails = dialog.getResult();
-                            if (updatedItemDetails != null) {
-                                try {
-                                    // Update the item details in the database
-                                    Statement updateStmt = conn.createStatement();
-                                    String updateSql = "UPDATE public.item " +
-                                            "SET title = '" + updatedItemDetails[0] + "', " +
-                                            "isbn = '" + updatedItemDetails[1] + "', " +
-                                            "publisher = '" + updatedItemDetails[2] + "', " +
-                                            "location = '" + updatedItemDetails[3] + "', " +
-                                            "type = '" + updatedItemDetails[4] + "' " +
-                                            "WHERE itemid = '" + itemId + "'";
-                                    updateStmt.executeUpdate(updateSql);
-
-                                    // Update the copy availability in the database
-                                    Statement updateCopyStmt = conn.createStatement();
-                                    String updateCopySql = "UPDATE public.copy " +
-                                            "SET availability = " + Boolean.parseBoolean(updatedItemDetails[5]) + " " +
-                                            "WHERE itemid = '" + itemId + "'";
-                                    updateCopyStmt.executeUpdate(updateCopySql);
-
-                                    // Refresh the search results
-                                    searchButton.fire();
-
-                                    updateStmt.close();
-                                    updateCopyStmt.close();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                }
-
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-         */
-
-
         // Title
         Label titleLabel = new Label("Title:");
         TextField titleField = new TextField();
@@ -296,7 +157,7 @@ public class UpdateScene extends Scene {
         GridPane.setConstraints(titleField, 1, 0);
         GridPane.setConstraints(titleUpdateButton, 2, 0);
 
-// Publisher
+        // Publisher
         Label publisherLabel = new Label("Publisher:");
         TextField publisherField = new TextField();
         Button publisherUpdateButton = new Button("Update");
@@ -305,7 +166,7 @@ public class UpdateScene extends Scene {
         GridPane.setConstraints(publisherField, 1, 1);
         GridPane.setConstraints(publisherUpdateButton, 2, 1);
 
-// Location
+        // Location
         Label locationLabel = new Label("Location:");
         TextField locationField = new TextField();
         Button locationUpdateButton = new Button("Update");
@@ -314,7 +175,7 @@ public class UpdateScene extends Scene {
         GridPane.setConstraints(locationField, 1, 2);
         GridPane.setConstraints(locationUpdateButton, 2, 2);
 
-// Type
+        // Type
         ObservableList<String> options = FXCollections.observableArrayList(
                 "Course literature", "Other literature", "Magazine", "DVD");
         ChoiceBox<String> typeBox = new ChoiceBox<>(options);
@@ -354,6 +215,143 @@ public class UpdateScene extends Scene {
         GridPane.setConstraints(loanabilityButton, 1, 5);
         GridPane.setConstraints(loanUpdateButton, 2, 5);
 
+        Button editButton = new Button("Edit");
+        GridPane.setConstraints(editButton, 1, 7);
+        editButton.setOnAction(e -> {
+            // Define attributeNamesBuilder variable
+            StringBuilder attributeNamesBuilder = new StringBuilder();
+
+            String selectedItem = resultList.getSelectionModel().getSelectedItem();
+            //System.out.println(selectedItem);
+            if (selectedItem == null || selectedItem.equals(attributeNamesBuilder.toString().trim())) {
+                // No item selected or selected item is the attribute names row
+                return;
+            }
+
+            UUID itemId = itemMap.get(selectedItem);
+            if (itemId == null) {
+                // Item ID not found in the map
+                return;
+            }
+
+            // Extract copyid from selectedItem string
+            String[] parts = selectedItem.split(" - ");
+            if (parts.length < 1) {
+                // Invalid selected item format
+                return;
+            }
+            String copyId = parts[parts.length - 1]; // Assuming copyid is the last part of the string
+            if (copyId.length() >= 2) {
+                copyId = copyId.substring(0, copyId.length() - 2);
+            }
+
+            // Retrieve the item and copy details from the database
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                String sql = "SELECT item.itemid, item.title, item.isbn, item.publisher, item.location, item.type, copy.copyid, copy.availability " +
+                        "FROM public.item " +
+                        "JOIN public.copy ON item.itemid = copy.itemid " +
+                        "WHERE item.itemid = '" + itemId + "'" +
+                        "AND copy.copyid = '" + copyId + "'";
+                ResultSet rs = stmt.executeQuery(sql);
+
+                if (rs.next()) {
+                    // Retrieve the current values
+                    String currentTitle = rs.getString("title");
+                    String currentISBN = rs.getString("isbn");
+                    String currentPublisher = rs.getString("publisher");
+                    String currentLocation = rs.getString("location");
+                    String currentType = rs.getString("type");
+                    int currentAvailability = rs.getInt("availability");
+
+                    // Update the text fields with the current item details
+                    titleField.setText(currentTitle);
+                    isbnField.setText(currentISBN);
+                    publisherField.setText(currentPublisher);
+                    locationField.setText(currentLocation);
+                    typeBox.getSelectionModel().select(currentType);
+                    //loanabilityButton.setSelected(currentAvailability);
+
+                    // Update the loanability button based on availability
+                    // TODO Bug if you chose a borrowed item and try to edit...?
+                    if (currentAvailability == 1) {
+                        loanabilityButton.setText("True");
+                        loanabilityButton.setSelected(true);
+                    } else if (currentAvailability == 3) {
+                        loanabilityButton.setText("False");
+                        loanabilityButton.setSelected(false);
+                    }
+
+                    // Assign the value of itemid to itemid2
+                    itemid2 = rs.getString("itemid");
+                    copyid2 = rs.getString("copyid");
+
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // give updateButtons functionality
+        titleUpdateButton.setOnAction(e -> {
+            String newTitle = titleField.getText();
+            if (newTitle.isEmpty()) {
+                showAlert("Title cannot be empty.");
+                return;
+            }
+            updateItemAttribute("title", newTitle, UUID.fromString(getItemid2()));
+        });
+        // ISBN
+        isbnUpdateButton.setOnAction(e -> {
+            String newISBN = isbnField.getText();
+            if (newISBN.isEmpty()) {
+                showAlert("ISBN cannot be empty.");
+                return;
+            }
+            updateItemAttribute("isbn", newISBN, UUID.fromString(getItemid2()));
+        });
+        // Publisher
+        publisherUpdateButton.setOnAction(e -> {
+            String newPublisher = publisherField.getText();
+            if (newPublisher.isEmpty()) {
+                showAlert("Publisher cannot be empty.");
+                return;
+            }
+            updateItemAttribute("publisher", newPublisher, UUID.fromString(getItemid2()));
+        });
+        // Location
+        locationUpdateButton.setOnAction(e -> {
+            String newLocation = locationField.getText();
+            if (newLocation.isEmpty()) {
+                showAlert("Location cannot be empty.");
+                return;
+            }
+            updateItemAttribute("location", newLocation, UUID.fromString(getItemid2()));
+        });
+        // Type
+        typeUpdateButton.setOnAction(e -> {
+            String newType = typeBox.getValue();
+            if (newType == null) {
+                showAlert("Please choose a type.");
+                return;
+            }
+            int intType = optionMap.get(newType);
+            System.out.println(intType); // Output: 1
+            updateItemAttribute("type", Integer.toString(intType), UUID.fromString(getItemid2()));
+        });
+        //loanability
+        // TODO check if something more has to be done as this concerns copyid
+
+        loanUpdateButton.setOnAction(e -> {
+            int newAvailability = loanabilityButton.isSelected() ? 1 : 3;
+            updateItemAttribute("availability", String.valueOf(newAvailability), UUID.fromString(getCopyid2()));
+        });
+
+
         VBox vbox = new VBox();
         vbox.getChildren().addAll(searchInput, searchButton, resultList);
         vbox.setSpacing(10);
@@ -370,7 +368,7 @@ public class UpdateScene extends Scene {
         titleUpdateButton, isbnUpdateButton, publisherUpdateButton, locationUpdateButton, typeUpdateButton, loanUpdateButton);
         // Set the GridPane in the center of the BorderPane
         borderPane.setCenter(titlePublisherPane);
-        borderPane.setBottom(new VBox(deleteButton, updateButton));
+        borderPane.setBottom(new VBox(deleteButton, editButton));
 
         resultList.setItems(items);
 
@@ -378,9 +376,58 @@ public class UpdateScene extends Scene {
         stage.setScene(this);
     }
 
+    // Helper method to update item attribute in the database
+    private void updateItemAttribute(String attributeName, String attributeValue, UUID itemId) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
+            String sql;
+            if (attributeName == "availability") {
+                sql = "UPDATE public.copy " +
+                        "SET " + attributeName + " = '" + attributeValue + "' " +
+                        "WHERE itemid = '" + getItemid2() + "' " +
+                        "AND copyid = '" + getCopyid2() + "'";
+            } else {
+                sql = "UPDATE public.item " +
+                        "SET " + attributeName + " = '" + attributeValue + "' " +
+                        "WHERE itemid = '" + itemId + "'";
+            }
+
+            stmt.executeUpdate(sql);
+            showAlert("Attribute updated successfully!");
+            stmt.close();
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Error updating attribute.");
+        }
+    }
+
+    // Helper method to display an alert dialog
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     private void deleteEntireItem(ObservableList<String> selectedItems) {
     }
 
     private void deleteSelectedCopy(ObservableList<String> selectedItems) {
+    }
+
+    public String getItemid2() {
+        return itemid2;
+    }
+    public void setItemid2(String itemid2) {
+        this.itemid2 = itemid2;
+    }
+    public String getCopyid2() {
+        return copyid2;
+    }
+    public void setCopyid2(String copyid2) {
+        this.copyid2 = copyid2;
     }
 }
