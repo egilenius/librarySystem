@@ -1,23 +1,23 @@
 package com.mycompany.librarysystem;
 
 public class Item {
-    private int id;
+    private int itemid;
     private String title;
     private String author;
     private String genre;
     private String location;
     private boolean available;
 
-    public Item(int id, String title, String author, String genre) {
-        this.id = id;
+    public Item(int itemid, String title, String author, String genre) {
+        this.itemid = itemid;
         this.title = title;
         this.author = author;
         this.genre = genre;
         this.available = true;
     }
 
-    public Item(int id, String title, String author, String genre, String location, boolean available) {
-        this.id = id;
+    public Item(int itemid, String title, String author, String genre, String location, boolean available) {
+        this.itemid = itemid;
         this.title = title;
         this.author = author;
         this.genre = genre;
@@ -25,12 +25,12 @@ public class Item {
         this.available = available;
     }
 
-    public int getId() {
-        return id;
+    public int getItemid() {
+        return itemid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setItemid(int itemid) {
+        this.itemid = itemid;
     }
 
     public String getTitle() {
