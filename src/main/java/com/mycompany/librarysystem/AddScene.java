@@ -176,10 +176,20 @@ public class AddScene extends Scene {
                 // execute item creation statement.
                 psItem.executeUpdate();
                 // TODO check why can't insert like this.
-                // execute copy creation statement.
-                psCopy.setString(1, uuidString);
-                psCopy.setInt(2, getLoanability());
-                psCopy.executeUpdate();
+                // Retrieve the newly generated itemid
+                psCheck2.setString(1, title);
+                psCheck2.setString(2, ISBN);
+                psCheck2.setString(3, publisher);
+                psCheck2.setString(4, location);
+                psCheck2.setInt(5, type);
+                ResultSet itemResultSet = psCheck2.executeQuery();
+                if (itemResultSet.next()) {
+                    String itemid = itemResultSet.getString("itemid");
+                    psCopy.setString(1, itemid);
+                    psCopy.setInt(2, getLoanability());
+                    psCopy.executeUpdate();
+                    } // TODO add else clause?
+
             } else {
                 // retrieve itemid and use as fk for new copy
                 String itemid = resultSet.getString("itemid");
