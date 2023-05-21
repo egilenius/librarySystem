@@ -43,13 +43,12 @@ public class UpdateScene extends Scene {
 
         // Result list
         ListView<String> resultList = new ListView<>();
-        resultList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        resultList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         resultList.setPrefHeight(300);
         resultList.setPrefWidth(400);
         ObservableList<String> items = FXCollections.observableArrayList();
         GridPane.setConstraints(resultList, 0, 7);
 
-        // TODO connect to database
         // delete item
         Button deleteButton = new Button("Delete");
         GridPane.setConstraints(deleteButton, 2, 7);
@@ -70,12 +69,30 @@ public class UpdateScene extends Scene {
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent() && result.get() == deleteCopyButton) {
                     // Delete selected copy
-                    deleteSelectedCopy(selectedItems);
+                    for (String selectedItem : selectedItems) {
+                        String[] parts = selectedItem.split(" - ");
+                        if (parts.length < 1) {
+                            // Invalid selected item format
+                            continue;
+                        }
+                        String copyId = parts[parts.length - 1]; // Assuming copyid is the last part of the string
+                        if (copyId.length() >= 2) {
+                            copyId = copyId.substring(0, copyId.length() - 2);
+                        }
+                        // Use the copyId to delete the selected copy
+                        deleteCopy(UUID.fromString(copyId));
+                    }
                 } else if (result.isPresent() && result.get() == deleteItemButton) {
                     // Delete entire item and all its copies
-                    deleteEntireItem(selectedItems);
+                    for (String selectedItem : selectedItems) {
+                        UUID itemId = itemMap.get(selectedItem);
+                        if (itemId != null) {
+                            // Use the itemId to delete the entire item and its copies
+                            deleteItem(itemId);
+                        }
+                    }
                 }
-            }
+                }
         });
 
         // Search button
@@ -344,8 +361,6 @@ public class UpdateScene extends Scene {
             updateItemAttribute("type", Integer.toString(intType), UUID.fromString(getItemid2()));
         });
         //loanability
-        // TODO check if something more has to be done as this concerns copyid
-
         loanUpdateButton.setOnAction(e -> {
             int newAvailability = loanabilityButton.isSelected() ? 1 : 3;
             updateItemAttribute("availability", String.valueOf(newAvailability), UUID.fromString(getCopyid2()));
@@ -412,10 +427,36 @@ public class UpdateScene extends Scene {
         alert.showAndWait();
     }
 
-    private void deleteEntireItem(ObservableList<String> selectedItems) {
+    private void deleteItem(UUID itemId) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
+            String sql = "DELETE FROM public.copy WHERE itemid = '" + itemId + "';" +
+                    "DELETE FROM public.item WHERE itemid = '" + itemId + "'";
+            stmt.executeUpdate(sql);
+            showAlert("Copy deleted successfully!");
+            stmt.close();
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Error deleting copy.");
+        }
+
     }
 
-    private void deleteSelectedCopy(ObservableList<String> selectedItems) {
+    private void deleteCopy(UUID copyid) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
+            String sql = "DELETE FROM public.copy WHERE copyid = '" + copyid + "'";
+            stmt.executeUpdate(sql);
+            showAlert("Copy deleted successfully!");
+            stmt.close();
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Error deleting copy.");
+        }
     }
 
     public String getItemid2() {
