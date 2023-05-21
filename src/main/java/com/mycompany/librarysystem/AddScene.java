@@ -188,7 +188,7 @@ public class AddScene extends Scene {
                     psCopy.setString(1, itemid);
                     psCopy.setInt(2, getLoanability());
                     psCopy.executeUpdate();
-                    }
+                    } // TODO add else clause?
 
             } else {
                 // retrieve itemid and use as fk for new copy
