@@ -462,13 +462,9 @@ public class UpdateScene extends Scene {
     public String getItemid2() {
         return itemid2;
     }
-    public void setItemid2(String itemid2) {
-        this.itemid2 = itemid2;
-    }
+
     public String getCopyid2() {
         return copyid2;
     }
-    public void setCopyid2(String copyid2) {
-        this.copyid2 = copyid2;
-    }
+
 }

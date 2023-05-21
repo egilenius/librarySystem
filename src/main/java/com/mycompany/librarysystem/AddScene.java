@@ -15,7 +15,6 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class AddScene extends Scene {
     User user;
@@ -198,7 +197,7 @@ public class AddScene extends Scene {
                 psCopy.executeUpdate();
             }
 
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText(null);
             alert.setContentText("Item added!");

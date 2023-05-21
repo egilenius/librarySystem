@@ -12,11 +12,10 @@ public class User {
 
     private UUID userid;
     private String username;
-    private String password;
-    private String email;
-    private int type;
     private int allowedloans;
     private int presentloans;
+
+
 
     public User(String username, UUID userid, int allowedloans, int presentloans) {
         this.username = username;
@@ -71,12 +70,12 @@ public class User {
         return allowedLoans;
     }
 
-    public UUID getUserid() {
-        return userid;
-    }
-
     public String getUsername() {
         return username;
+    }
+
+    public UUID getUserid() {
+        return userid;
     }
 
     public int getAllowedloans() {
@@ -92,6 +91,8 @@ public class User {
     }
     public void setPresentloans(int newPresentLoans) {
     }
+
+
 
     // Constructor, getters, setters, and database methods
 

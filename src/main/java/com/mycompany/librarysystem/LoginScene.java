@@ -27,8 +27,6 @@ public class LoginScene extends Scene {
         grid.setVgap(8);
         grid.setHgap(10);
 
-        // TODO add return button
-
         //Username Label
         Label usernameLabel = new Label("Username:");
         GridPane.setConstraints(usernameLabel, 0, 0);

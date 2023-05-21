@@ -123,7 +123,7 @@ public class HomeScene extends Scene {
         borderPane.setTop(topGrid);
 
         // Available buttons depending on kind of user
-        /**
+
         if (getUser() == null){
             LoanButton.setDisable(true);
             dueButton.setDisable(true);
@@ -149,7 +149,7 @@ public class HomeScene extends Scene {
             GridPane.setConstraints(usernameLabel, 4, 1);
             topGrid.getChildren().addAll(loginLabel, usernameLabel);
         }
-         */
+
 
         return borderPane;
     }
@@ -161,78 +161,4 @@ public class HomeScene extends Scene {
     public void setUser(User user) {
         this.user = user;
     }
-
-    /**
-     * //Home
-     *         Button homeButton = new Button("Home");
-     *         GridPane.setConstraints(homeButton, 0, 0);
-     *         homeButton.setOnAction(e -> {
-     *             Scene homeScene = new HomeScene(stage, user);
-     *             stage.setScene(homeScene);
-     *         });
-     */
-
-
-    /**
-    private void addButtonsToTop(BorderPane borderPane, Stage stage, Scene startScene) {
-        //User buttons
-        //Home
-        Button homeButton = new Button("Home");
-        GridPane.setConstraints(homeButton, 0, 0);
-        homeButton.setOnAction(e -> {
-            Scene homeScene = new HomeScene(stage, startScene, user);
-            stage.setScene(homeScene);
-        });
-        //Search
-        Button searchButton = new Button("Search");
-        GridPane.setConstraints(searchButton, 1, 0);
-        searchButton.setOnAction(e -> {
-            Scene searchScene = new SearchScene(stage, startScene, user);
-            stage.setScene(searchScene);
-        });
-        //Loans
-        Button LoanButton = new Button("Loans");
-        GridPane.setConstraints(LoanButton, 2, 0);
-        LoanButton.setOnAction(e -> {
-            Scene LoanScene = new LoanScene(stage, startScene, user);
-            stage.setScene(LoanScene);
-        });
-        //Logout
-        Button LogoutButton = new Button("Logout(" + user.getUsername()+")");
-        GridPane.setConstraints(LogoutButton, 3, 0);
-        LogoutButton.setOnAction(e -> {
-            stage.setScene(startScene);
-        });
-        //Create librarian buttons
-        //Due items button
-        Button dueButton = new Button("Due items");
-        GridPane.setConstraints(dueButton, 0, 1);
-        dueButton.setOnAction(e -> {
-            Scene dueScene = new DueScene(stage, startScene, user);
-            stage.setScene(dueScene);
-        });
-        //add item button
-        Button addButton = new Button("Add item");
-        GridPane.setConstraints(addButton, 1, 1);
-        addButton.setOnAction(e -> {
-            Scene addScene = new AddScene(stage, startScene, user);
-            stage.setScene(addScene);
-        });
-
-        //change item button
-        Button updateButton = new Button("Update item");
-        GridPane.setConstraints(updateButton, 2, 1);
-        updateButton.setOnAction(e -> {
-            Scene updateScene = new UpdateScene(stage, startScene, user);
-            stage.setScene(updateScene);
-        });
-
-        // Add buttons to top of BorderPane
-        GridPane topGrid = new GridPane();
-        topGrid.setPadding(new Insets(10, 10, 10, 10));
-        topGrid.setHgap(10);
-        topGrid.getChildren().addAll(homeButton, searchButton, LoanButton, LogoutButton, dueButton, addButton, updateButton);
-        borderPane.setTop(topGrid);
-    }
-     */
 }
